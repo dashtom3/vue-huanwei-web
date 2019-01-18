@@ -136,7 +136,7 @@ export default {
     updateCarDialog(item){
       if(item.car[0]){
         this.carEntity = item.car[0]
-        this.carEntity.sn = item.SN
+        this.carEntity.sn = item.sn
       }else {
         this.carEntity._id = null
       }
