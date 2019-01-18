@@ -8,7 +8,7 @@ export default{
   // },
   ENUM:{
     CAR:['洒水车','洗扫车','吊装车','扫地车','管理用车'],
-    CAR_WEIGHT:['4吨','5吨','7吨']
+    CAR_WEIGHT:['4吨','5吨','8吨']
   },
   success (obj, msg, url) {
     obj.$message({

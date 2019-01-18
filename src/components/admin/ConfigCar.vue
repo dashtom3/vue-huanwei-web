@@ -121,6 +121,7 @@ export default {
       carData:[],
       carEntity:{
         name:null,
+        state:null,
         type:null,
         brand:null,
         type_weight:null,
