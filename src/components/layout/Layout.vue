@@ -43,7 +43,7 @@ export default {
   data () {
     return {
       data:[{name:'基础管理',icon:'el-icon-edit',data:[['停车位实时管理','LotState',''],['订单实时管理','OrderState',''],['取车点实时管理','WaitState','']]},
-      {name:'基础配置',icon:'el-icon-menu',data:[['停车场配置','Park','el-icon-menu'],['停车位配置','Lot',''],['取车点配置','Wait','el-icon-location-outline'],['地磁配置','Lock','']]},
+      {name:'设备配置',icon:'el-icon-menu',data:[['车辆配置','Car','el-icon-menu'],['停车位配置','Lot',''],['取车点配置','Wait','el-icon-location-outline'],['地磁配置','Lock','']]},
       {name:'基础数据',icon:'el-icon-picture',data:[['图像数据','Pic','']]},
       {name:'接口测试',icon:'el-icon-edit',data:[['接口测试','Test','']]}],
       // data:[['邮箱管理','Park','el-icon-menu'],['基础设置','Lot','el-icon-edit'],['实时数据','Demo','el-icon-location-outline'],['历史数据','Wait','el-icon-tickets']],

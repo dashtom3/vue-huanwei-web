@@ -6,6 +6,10 @@ export default{
   //   document.body.scrollTop = 0 + 'px'
   //   obj.$router.push({ name: url })
   // },
+  ENUM:{
+    CAR:['洒水车','洗扫车','吊装车','扫地车','管理用车'],
+    CAR_WEIGHT:['4吨','5吨','7吨']
+  },
   success (obj, msg, url) {
     obj.$message({
       message: msg,

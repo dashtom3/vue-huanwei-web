@@ -4,7 +4,7 @@ import Router from 'vue-router'
 import Layout from '@/components/layout/Layout'
 import Main from '@/components/Main'
 import Index from '@/components/Index'
-import Park from '@/components/admin/Park'
+import Car from '@/components/admin/Car'
 import Lot from '@/components/admin/Lot'
 import LotState from '@/components/admin/LotState'
 import WaitState from '@/components/admin/WaitState'
@@ -49,9 +49,9 @@ export default new Router({
       component: Layout,
       children:[
         {
-          path:'/admin/park',
-          component: Park,
-          name:'Park'
+          path:'/admin/car',
+          component: Car,
+          name:'Car'
         },
         {
           path:'/admin/lot',
