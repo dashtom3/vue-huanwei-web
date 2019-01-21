@@ -42,7 +42,7 @@
         <el-form-item label="职务"><el-input v-model="userEntity.title"></el-input></el-form-item>
         <el-form-item label="类型">
           <el-select v-model="userEntity.type" placeholder="">
-            <el-option v-for="(item,index) in $global.USER_TYPE" :label="item" :value="index"></el-option>
+            <el-option v-for="(item,index) in $global.ENUM.USER_TYPE" :label="item" :value="index"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="负责人">
@@ -62,6 +62,16 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="isUpdateShow = false">取 消</el-button>
         <el-button type="primary" @click="updateUser">确 定</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog
+      title="删除用户"
+      :visible.sync="isDeleteShow"
+      width="50%">
+      <span>确定要删除用户么？</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="isDeleteShow = false">取 消</el-button>
+        <el-button type="primary" @click="deleteUser">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -91,17 +101,17 @@ export default {
         sn_wrist:null
       },
       isUpdateShow:false,
+      isDeleteShow:false,
     }
   },
-  created(){
+  async created(){
+    await this.getDepartmentList()
     this.getUserList()
   },
-
   methods:{
-    getDepartmentList(){
-      this.$global.httpGetWithToken(this,'department/all').then(res=>{
-          this.departmentData = res.data
-      })
+    async getDepartmentList(){
+      const res = await this.$global.httpGetWithToken(this,'department/all')
+      this.departmentData = res.data
     },
     getUserList(){
       this.$global.httpGetWithToken(this,'user/all').then(res=>{
@@ -122,7 +132,17 @@ export default {
         this.isUpdateShow = !this.isUpdateShow
         this.getUserList()
       })
-    }
+    },
+    deleteUserDialog(item){
+      this.isDeleteShow = !this.isDeleteShow
+      this.userEntity = item
+    },
+    deleteUser(){
+      this.$global.httpPostWithToken(this,'user/operate',{action:2,data:this.userEntity}).then(res=>{
+        this.isDeleteShow = !this.isDeleteShow
+        this.getUserList()
+      })
+    },
   }
 }
 </script>

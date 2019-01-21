@@ -47,7 +47,16 @@
         <el-button type="primary" @click="updateDepartment">确 定</el-button>
       </span>
     </el-dialog>
-
+    <el-dialog
+      title="删除部门"
+      :visible.sync="isDeleteShow"
+      width="50%">
+      <span>确定要删除部门么？</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="isDeleteShow = false">取 消</el-button>
+        <el-button type="primary" @click="deleteDepartment">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -65,6 +74,7 @@ export default {
         boss:null,
       },
       isUpdateShow:false,
+      isDeleteShow:false,
     }
   },
   created(){
@@ -90,6 +100,16 @@ export default {
       var data = {action:this.departmentEntity._id?1:0,data:this.departmentEntity}
       this.$global.httpPostWithToken(this,'department/operate',data).then(res=>{
         this.isUpdateShow = !this.isUpdateShow
+        this.getDepartmentList()
+      })
+    },
+    deleteDepartmentDialog(item){
+      this.isDeleteShow = !this.isDeleteShow
+      this.departmentEntity = item
+    },
+    deleteDepartment(){
+      this.$global.httpPostWithToken(this,'department/operate',{action:2,data:this.departmentEntity}).then(res=>{
+        this.isDeleteShow = !this.isDeleteShow
         this.getDepartmentList()
       })
     }
