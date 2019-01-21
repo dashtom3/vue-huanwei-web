@@ -5,18 +5,18 @@
     </div>
     <div class="park-table">
       <el-table
-        :data="carData"
+        :data="cardData"
         border
         style="width: 100%">
         <el-table-column prop="sn" label="设备编号"></el-table-column>
         <el-table-column prop="gps_card" label="gps手机卡号"></el-table-column>
-        <el-table-column prop="speed" label="关联车辆信息">
-          <template slot-scope="scope" v-if="scope.row.car[0]">{{scope.row.car[0].name}}</template>
+        <el-table-column prop="speed" label="关联用户信息">
+          <template slot-scope="scope" v-if="scope.row.user[0]">{{scope.row.user[0].name}}</template>
         </el-table-column>
         <el-table-column
           label="操作">
           <template slot-scope="scope">
-            <el-button type="text" size="mini" @click="updateCarDialog(scope.row)">设置</el-button>
+            <el-button type="text" size="mini" @click="updateCardDialog(scope.row)">设置</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -25,14 +25,14 @@
       title="设置设备信息"
       :visible.sync="isUpdateShow"
       width="70%">
-      <el-form ref="form" :model="carEntity" label-width="80px">
+      <el-form ref="form" :model="cardEntity" label-width="80px">
         <el-form-item label="gps手机卡号">
-          <el-input v-model="carEntity.gps_card"></el-input>
+          <el-input v-model="cardEntity.gps_card"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="isUpdateShow = false">取 消</el-button>
-        <el-button type="primary" @click="updateCar">确 定</el-button>
+        <el-button type="primary" @click="updateCard">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -45,32 +45,31 @@ export default {
   name: 'Park',
   data () {
     return {
-      carData:[],
-      carEntity:{
+      cardData:[],
+      cardEntity:{
         gps_card:null
       },
       isUpdateShow:false,
     }
   },
   created(){
-    this.getCarList()
+    this.getCardList()
   },
 
   methods:{
-    getCarList(_id){
-      this.$global.httpGetWithToken(this,'car/allOfConfig').then(res=>{
-        console.log(res)
-          this.carData = res.data
+    getCardList(_id){
+      this.$global.httpGetWithToken(this,'user/allCardConfig').then(res=>{
+          this.cardData = res.data
       })
     },
-    updateCarDialog(item){
-      this.carEntity = item
+    updateCardDialog(item){
+      this.cardEntity = item
       this.isUpdateShow = !this.isUpdateShow
     },
-    updateCar(){
-      this.$global.httpPostWithToken(this,'car/operateDevice',{action:1,data:{_id:this.carEntity._id,gps_card:this.carEntity.gps_card}}).then(res=>{
+    updateCard(){
+      this.$global.httpPostWithToken(this,'user/operateCard',{action:1,data:{_id:this.cardEntity._id,gps_card:this.cardEntity.gps_card}}).then(res=>{
         this.isUpdateShow = !this.isUpdateShow
-        this.getCarList()
+        this.getCardList()
       })
     }
   }
