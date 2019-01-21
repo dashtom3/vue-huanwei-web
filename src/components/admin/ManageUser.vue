@@ -1,102 +1,69 @@
 <template>
   <div class="park">
     <div class="park-btn">
-      <el-button type="primary" size="medium" @click="updateUserDialog()">添加用户个</el-button>
+      <el-button type="primary" size="medium" @click="updateUserDialog()">添加用户</el-button>
     </div>
     <div class="park-table">
       <el-table
-        :data="carData"
+        :data="userData"
         border
         style="width: 100%">
-        <el-table-column prop="sn" label="设备编号"></el-table-column>
-        <el-table-column prop="speed" label="车牌">
-          <template slot-scope="scope" v-if="scope.row.car[0]">{{scope.row.car[0].name}}</template>
-        </el-table-column>
-        <el-table-column prop="speed" label="驾驶员">
-          <template slot-scope="scope" v-if="scope.row.car[0]">{{scope.row.car[0].user}}</template>
-        </el-table-column>
-        <el-table-column prop="speed" label="类型">
-          <template slot-scope="scope" v-if="scope.row.car[0]">{{scope.row.car[0].type}}</template>
-        </el-table-column>
-        <el-table-column prop="speed" label="品牌">
-          <template slot-scope="scope" v-if="scope.row.car[0]">{{scope.row.car[0].brand}}</template>
-        </el-table-column>
-        <el-table-column prop="speed" label="吨位">
-          <template slot-scope="scope" v-if="scope.row.car[0]">{{scope.row.car[0].type_weight}}</template>
-        </el-table-column>
-        <el-table-column prop="speed" label="是否有保险">
-          <template slot-scope="scope" v-if="scope.row.car[0]">{{scope.row.car[0].has_insurance}}</template>
-        </el-table-column>
-        <el-table-column prop="speed" label="系统时间">
-          <template slot-scope="scope" v-if="scope.row.car[0]">{{scope.row.car[0].create_time}}</template>
-        </el-table-column>
-        <el-table-column prop="speed" label="注册时间">
-          <template slot-scope="scope" v-if="scope.row.car[0]">{{scope.row.car[0].install_time}}</template>
-        </el-table-column>
-        <el-table-column prop="speed" label="说明">
-          <template slot-scope="scope" v-if="scope.row.car[0]">{{scope.row.car[0].intro}}</template>
-        </el-table-column>
+        <el-table-column prop="username" label="用户名"></el-table-column>
+        <el-table-column prop="password" label="密码"></el-table-column>
+        <el-table-column prop="realname" label="真实姓名"></el-table-column>
+        <el-table-column prop="phone" label="手机号"></el-table-column>
+        <el-table-column prop="id_card" label="身份证号"></el-table-column>
+        <el-table-column prop="title" label="职务"></el-table-column>
+        <el-table-column prop="type" label="类型"></el-table-column>
+        <el-table-column prop="boss" label="负责人"></el-table-column>
+        <el-table-column prop="department" label="部门"></el-table-column>
+        <el-table-column prop="place" label="地点"></el-table-column>
+        <el-table-column prop="sn_card" label="电子工牌编号"></el-table-column>
+        <el-table-column prop="sn_wrist" label="手环编号"></el-table-column>
         <el-table-column
           label="操作">
           <template slot-scope="scope">
-            <el-button type="text" size="mini" @click="updateUserDialog(scope.row)">设置车辆</el-button>
+            <el-button type="text" size="mini" @click="updateUserDialog(scope.row)">修改</el-button>
+            <el-button type="text" size="mini" @click="deleteUserDialog(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
     </div>
     <el-dialog
-      title="设置车辆信息"
+      title="设置用户信息"
       :visible.sync="isUpdateShow"
       width="70%">
       <el-form ref="form" :model="userEntity" label-width="80px">
-        <el-form-item label="用户名">
-          <el-input v-model="userEntity.username"></el-input>
-        </el-form-item>
-        <el-form-item label="gps手机号">
-          <el-input v-model="userEntity.phone"></el-input>
-        </el-form-item>
+        <el-form-item label="用户名"><el-input v-model="userEntity.username"></el-input></el-form-item>
+        <el-form-item label="密码"><el-input v-model="userEntity.password"></el-input></el-form-item>
+        <el-form-item label="真实姓名"><el-input v-model="userEntity.realname"></el-input></el-form-item>
+        <el-form-item label="手机号"><el-input v-model="userEntity.phone"></el-input></el-form-item>
+        <el-form-item label="身份证号"><el-input v-model="userEntity.id_card"></el-input></el-form-item>
+        <el-form-item label="职务"><el-input v-model="userEntity.title"></el-input></el-form-item>
         <el-form-item label="类型">
           <el-select v-model="userEntity.type" placeholder="">
-            <el-option v-for="item in $global.ENUM.CAR" :label="item" :value="item"></el-option>
+            <el-option v-for="(item,index) in $global.USER_TYPE" :label="item" :value="index"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="车重">
-          <el-select v-model="carEntity.type_weight" placeholder="">
-            <el-option v-for="item in $global.ENUM.CAR_WEIGHT" :label="item" :value="item"></el-option>
+        <el-form-item label="负责人">
+          <el-select v-model="userEntity.boss" placeholder="">
+            <el-option v-for="item in userData" :label="item.realname" :value="item._id"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="品牌">
-          <el-input v-model="carEntity.brand"></el-input>
-        </el-form-item>
-        <el-form-item label="安装日期">
-          <el-input v-model="carEntity.install_time"></el-input>
-        </el-form-item>
-        <el-form-item label="是否保险">
-          <el-select v-model="carEntity.has_insurance" placeholder="">
-            <el-option label="是" value="true"></el-option>
-            <el-option label="否" value="false"></el-option>
+        <el-form-item label="部门">
+          <el-select v-model="userEntity.department" placeholder="">
+            <el-option v-for="item in departmentData" :label="item.name" :value="item._id"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="说明">
-          <el-input v-model="carEntity.intro"></el-input>
-        </el-form-item>
-        <el-form-item label="位置">
-          <el-input v-model="carEntity.position"></el-input>
-        </el-form-item>
-        <el-form-item label="用户">
-          <!-- <el-select v-model="parkEntity.garageType" placeholder="请选择类型">
-            <el-option label="无" :value="0"></el-option>
-            <el-option label="地锁" :value="1"></el-option>
-            <el-option label="充电桩" :value="2"></el-option>
-          </el-select> -->
-        </el-form-item>
+        <el-form-item label="地点"><el-input v-model="userEntity.place"></el-input></el-form-item>
+        <el-form-item label="电子工牌编号"><el-input v-model="userEntity.sn_card"></el-input></el-form-item>
+        <el-form-item label="手环编号"><el-input v-model="userEntity.sn_wrist"></el-input></el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="isUpdateShow = false">取 消</el-button>
-        <el-button type="primary" @click="updateCar">确 定</el-button>
+        <el-button type="primary" @click="updateUser">确 定</el-button>
       </span>
     </el-dialog>
-
   </div>
 </template>
 
@@ -106,7 +73,8 @@ export default {
   name: 'Park',
   data () {
     return {
-      carData:[],
+      userData:[],
+      departmentData:[],
       userEntity:{
         username:null,
         password:null,
@@ -126,31 +94,33 @@ export default {
     }
   },
   created(){
-    this.getCarList()
+    this.getUserList()
   },
 
   methods:{
-    getCarList(_id){
-      this.$global.httpGetWithToken(this,'car/allOfConfig').then(res=>{
-        console.log(res)
-
-          this.carData = res.data
+    getDepartmentList(){
+      this.$global.httpGetWithToken(this,'department/all').then(res=>{
+          this.departmentData = res.data
+      })
+    },
+    getUserList(){
+      this.$global.httpGetWithToken(this,'user/all').then(res=>{
+          this.userData = res.data
       })
     },
     updateUserDialog(item){
-      if(item.car[0]){
-        this.carEntity = item.car[0]
-        this.carEntity.sn = item.sn
+      if(item){
+        this.userEntity = item
       }else {
-        this.carEntity._id = null
+        this.userEntity._id = null
       }
       this.isUpdateShow = !this.isUpdateShow
     },
-    updateCar(){
-      var data = {action:this.carEntity._id?1:0,data:this.carEntity}
-      this.$global.httpPostWithToken(this,'car/operate',data).then(res=>{
+    updateUser(){
+      var data = {action:this.userEntity._id?1:0,data:this.userEntity}
+      this.$global.httpPostWithToken(this,'user/operate',data).then(res=>{
         this.isUpdateShow = !this.isUpdateShow
-        this.getCarList()
+        this.getUserList()
       })
     }
   }
