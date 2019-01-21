@@ -8,8 +8,11 @@
         :data="carData"
         border
         style="width: 100%">
-        <el-table-column prop="sn" label="设备编号"></el-table-column>
         <el-table-column prop="name" label="车牌"></el-table-column>
+        <el-table-column label="状态">
+          <template slot-scope="scope">{{scope.row.state == 1 ? '使用':'未使用'}}</template>
+        </el-table-column>
+        <el-table-column prop="sn" label="设备编号"></el-table-column>
         <el-table-column label="驾驶员">
           <template slot-scope="scope" v-if="scope.row.user">{{scope.row.user.name}}</template>
         </el-table-column>
@@ -22,10 +25,12 @@
         <el-table-column prop="create_time" label="系统时间"></el-table-column>
         <el-table-column prop="install_time" label="注册时间"></el-table-column>
         <el-table-column prop="intro" label="说明"></el-table-column>
+
         <el-table-column
           label="操作">
           <template slot-scope="scope">
             <el-button type="text" size="mini" @click="updateCarDialog(scope.row)">设置车辆</el-button>
+            <el-button type="text" size="mini" @click="deleteCarDialog(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -37,6 +42,12 @@
       <el-form ref="form" :model="carEntity" label-width="80px">
         <el-form-item label="车牌号">
           <el-input v-model="carEntity.name"></el-input>
+        </el-form-item>
+        <el-form-item label="状态">
+          <el-select v-model="carEntity.state" placeholder="">
+            <el-option label="使用" :value=1 ></el-option>
+            <el-option label="未使用" :value=0 ></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="gps手机号">
           <el-input v-model="carEntity.phone"></el-input>
@@ -59,8 +70,8 @@
         </el-form-item>
         <el-form-item label="是否保险">
           <el-select v-model="carEntity.has_insurance" placeholder="">
-            <el-option label="是" value="true"></el-option>
-            <el-option label="否" value="false"></el-option>
+            <el-option label="是" :value="true"></el-option>
+            <el-option label="否" :value="false"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="说明">
@@ -70,11 +81,7 @@
           <el-input v-model="carEntity.position"></el-input>
         </el-form-item>
         <el-form-item label="用户">
-          <!-- <el-select v-model="parkEntity.garageType" placeholder="请选择类型">
-            <el-option label="无" :value="0"></el-option>
-            <el-option label="地锁" :value="1"></el-option>
-            <el-option label="充电桩" :value="2"></el-option>
-          </el-select> -->
+
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -82,7 +89,16 @@
         <el-button type="primary" @click="updateCar">确 定</el-button>
       </span>
     </el-dialog>
-
+    <el-dialog
+      title="删除车辆"
+      :visible.sync="isDeleteShow"
+      width="50%">
+      <span>确定要删除车辆么？</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="isDeleteShow = false">取 消</el-button>
+        <el-button type="primary" @click="deleteCar">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -105,6 +121,7 @@ export default {
         user:null,
       },
       isUpdateShow:false,
+      isDeleteShow:false,
     }
   },
   created(){
@@ -129,6 +146,16 @@ export default {
       var data = {action:this.carEntity._id?1:0,data:this.carEntity}
       this.$global.httpPostWithToken(this,'car/operate',data).then(res=>{
         this.isUpdateShow = !this.isUpdateShow
+        this.getCarList()
+      })
+    },
+    deleteCarDialog(item){
+      this.isDeleteShow = !this.isDeleteShow
+      this.carEntity = item
+    },
+    deleteCar(){
+      this.$global.httpPostWithToken(this,'user/operate',{action:2,data:this.carEntity}).then(res=>{
+        this.isDeleteShow = !this.isDeleteShow
         this.getCarList()
       })
     }

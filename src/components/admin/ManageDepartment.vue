@@ -10,7 +10,9 @@
         style="width: 100%">
         <el-table-column prop="name" label="部门名称"></el-table-column>
         <el-table-column prop="place" label="部门位置"></el-table-column>
-        <el-table-column prop="boss" label="部门负责人"></el-table-column>
+        <el-table-column label="部门负责人">
+          <template slot-scope="scope">{{scope.row.boss?scope.row.boss.realName+','+scope.row.boss.phone:''}}</template>
+        </el-table-column>
         <el-table-column prop="intro" label="备注"></el-table-column>
         <el-table-column prop="create_time" label="创建时间"></el-table-column>
         <el-table-column
@@ -35,7 +37,8 @@
         </el-form-item>
         <el-form-item label="负责人">
           <el-select v-model="departmentEntity.boss" placeholder="">
-            <!-- <el-option v-for="item in $global.ENUM.CAR" :label="item" :value="item"></el-option> -->
+            <el-option label="无" :value="null"></el-option>
+            <el-option v-for="item in userList" :label="item.realName" :value="item._id"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="备注">
@@ -66,6 +69,7 @@ export default {
   name: 'Park',
   data () {
     return {
+      userList:[],
       departmentData:[],
       departmentEntity:{
         name:null,
@@ -78,13 +82,19 @@ export default {
     }
   },
   created(){
-    this.getDepartmentList()
+    this.getUserList()
   },
 
   methods:{
+    getUserList(){
+      this.$global.httpGetWithToken(this,'user/all').then(res=>{
+          this.userList = res.data
+          this.getDepartmentList()
+      })
+    },
     getDepartmentList(){
       this.$global.httpGetWithToken(this,'department/all').then(res=>{
-        console.log(res)
+        console.log(res.data)
           this.departmentData = res.data
       })
     },

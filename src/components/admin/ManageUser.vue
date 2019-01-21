@@ -10,13 +10,15 @@
         style="width: 100%">
         <el-table-column prop="username" label="用户名"></el-table-column>
         <el-table-column prop="password" label="密码"></el-table-column>
-        <el-table-column prop="realname" label="真实姓名"></el-table-column>
+        <el-table-column prop="realName" label="真实姓名"></el-table-column>
         <el-table-column prop="phone" label="手机号"></el-table-column>
         <el-table-column prop="id_card" label="身份证号"></el-table-column>
         <el-table-column prop="title" label="职务"></el-table-column>
         <el-table-column prop="type" label="类型"></el-table-column>
         <el-table-column prop="boss" label="负责人"></el-table-column>
-        <el-table-column prop="department" label="部门"></el-table-column>
+        <el-table-column  label="部门主管信息">
+          <template slot-scope="scope">{{scope.row.department?scope.row.department.name+','+(scope.row.department.boss?scope.row.department.boss.realName+','+scope.row.department.boss.phone:''):''}}</template>
+        </el-table-column>
         <el-table-column prop="place" label="地点"></el-table-column>
         <el-table-column prop="sn_card" label="电子工牌编号"></el-table-column>
         <el-table-column prop="sn_wrist" label="手环编号"></el-table-column>
@@ -36,7 +38,7 @@
       <el-form ref="form" :model="userEntity" label-width="80px">
         <el-form-item label="用户名"><el-input v-model="userEntity.username"></el-input></el-form-item>
         <el-form-item label="密码"><el-input v-model="userEntity.password"></el-input></el-form-item>
-        <el-form-item label="真实姓名"><el-input v-model="userEntity.realname"></el-input></el-form-item>
+        <el-form-item label="真实姓名"><el-input v-model="userEntity.realName"></el-input></el-form-item>
         <el-form-item label="手机号"><el-input v-model="userEntity.phone"></el-input></el-form-item>
         <el-form-item label="身份证号"><el-input v-model="userEntity.id_card"></el-input></el-form-item>
         <el-form-item label="职务"><el-input v-model="userEntity.title"></el-input></el-form-item>
@@ -47,7 +49,7 @@
         </el-form-item>
         <el-form-item label="负责人">
           <el-select v-model="userEntity.boss" placeholder="">
-            <el-option v-for="item in userData" :label="item.realname" :value="item._id"></el-option>
+            <el-option v-for="item in userData" :label="item.realName" :value="item._id"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="部门">
@@ -88,7 +90,7 @@ export default {
       userEntity:{
         username:null,
         password:null,
-        realname:null,
+        realName:null,
         id_card:null,
         phone:null,
         title:null,
@@ -104,17 +106,20 @@ export default {
       isDeleteShow:false,
     }
   },
-  async created(){
-    await this.getDepartmentList()
-    this.getUserList()
+  created(){
+    this.getDepartmentList()
+
   },
   methods:{
-    async getDepartmentList(){
-      const res = await this.$global.httpGetWithToken(this,'department/all')
-      this.departmentData = res.data
+    getDepartmentList(){
+      this.$global.httpGetWithToken(this,'department/all').then(res=>{
+        this.departmentData = res.data
+        this.getUserList()
+      })
     },
     getUserList(){
       this.$global.httpGetWithToken(this,'user/all').then(res=>{
+        console.log(res.data)
           this.userData = res.data
       })
     },
