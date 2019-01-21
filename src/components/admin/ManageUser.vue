@@ -1,7 +1,7 @@
 <template>
   <div class="park">
     <div class="park-btn">
-      <!-- <el-button type="primary" size="medium" @click="addParkDialog">添加停车场</el-button> -->
+      <el-button type="primary" size="medium" @click="updateUserDialog()">添加用户个</el-button>
     </div>
     <div class="park-table">
       <el-table
@@ -39,7 +39,7 @@
         <el-table-column
           label="操作">
           <template slot-scope="scope">
-            <el-button type="text" size="mini" @click="updateCarDialog(scope.row)">设置车辆</el-button>
+            <el-button type="text" size="mini" @click="updateUserDialog(scope.row)">设置车辆</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -48,15 +48,15 @@
       title="设置车辆信息"
       :visible.sync="isUpdateShow"
       width="70%">
-      <el-form ref="form" :model="carEntity" label-width="80px">
-        <el-form-item label="车牌号">
-          <el-input v-model="carEntity.name"></el-input>
+      <el-form ref="form" :model="userEntity" label-width="80px">
+        <el-form-item label="用户名">
+          <el-input v-model="userEntity.username"></el-input>
         </el-form-item>
         <el-form-item label="gps手机号">
-          <el-input v-model="carEntity.phone"></el-input>
+          <el-input v-model="userEntity.phone"></el-input>
         </el-form-item>
         <el-form-item label="类型">
-          <el-select v-model="carEntity.type" placeholder="">
+          <el-select v-model="userEntity.type" placeholder="">
             <el-option v-for="item in $global.ENUM.CAR" :label="item" :value="item"></el-option>
           </el-select>
         </el-form-item>
@@ -107,16 +107,20 @@ export default {
   data () {
     return {
       carData:[],
-      carEntity:{
-        name:null,
+      userEntity:{
+        username:null,
+        password:null,
+        realname:null,
+        id_card:null,
+        phone:null,
+        title:null,
         type:null,
-        brand:null,
-        type_weight:null,
-        install_time:null,
-        has_insurance:null,
-        intro:null,
-        sn:null,
-        user:null,
+        boss:null,
+        department:null,
+        place:null,
+        sn_card:null,
+        sn_app:null,
+        sn_wrist:null
       },
       isUpdateShow:false,
     }
@@ -133,7 +137,7 @@ export default {
           this.carData = res.data
       })
     },
-    updateCarDialog(item){
+    updateUserDialog(item){
       if(item.car[0]){
         this.carEntity = item.car[0]
         this.carEntity.sn = item.sn

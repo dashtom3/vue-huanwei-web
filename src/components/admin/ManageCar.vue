@@ -1,7 +1,7 @@
 <template>
   <div class="park">
     <div class="park-btn">
-      <!-- <el-button type="primary" size="medium" @click="addParkDialog">添加停车场</el-button> -->
+      <el-button type="primary" size="medium" @click="updateCarDialog()">添加车辆</el-button>
     </div>
     <div class="park-table">
       <el-table
@@ -9,33 +9,19 @@
         border
         style="width: 100%">
         <el-table-column prop="sn" label="设备编号"></el-table-column>
-        <el-table-column prop="speed" label="车牌">
-          <template slot-scope="scope" v-if="scope.row.car[0]">{{scope.row.car[0].name}}</template>
+        <el-table-column prop="name" label="车牌"></el-table-column>
+        <el-table-column label="驾驶员">
+          <template slot-scope="scope" v-if="scope.row.user">{{scope.row.user.name}}</template>
         </el-table-column>
-        <el-table-column prop="speed" label="驾驶员">
-          <template slot-scope="scope" v-if="scope.row.car[0]">{{scope.row.car[0].user}}</template>
+        <el-table-column prop="type" label="类型"></el-table-column>
+        <el-table-column prop="brand" label="品牌"></el-table-column>
+        <el-table-column prop="type_weight" label="吨位"></el-table-column>
+        <el-table-column label="是否有保险">
+          <template slot-scope="scope">{{scope.row.has_insurance ? '是':'否'}}</template>
         </el-table-column>
-        <el-table-column prop="speed" label="类型">
-          <template slot-scope="scope" v-if="scope.row.car[0]">{{scope.row.car[0].type}}</template>
-        </el-table-column>
-        <el-table-column prop="speed" label="品牌">
-          <template slot-scope="scope" v-if="scope.row.car[0]">{{scope.row.car[0].brand}}</template>
-        </el-table-column>
-        <el-table-column prop="speed" label="吨位">
-          <template slot-scope="scope" v-if="scope.row.car[0]">{{scope.row.car[0].type_weight}}</template>
-        </el-table-column>
-        <el-table-column prop="speed" label="是否有保险">
-          <template slot-scope="scope" v-if="scope.row.car[0]">{{scope.row.car[0].has_insurance}}</template>
-        </el-table-column>
-        <el-table-column prop="speed" label="系统时间">
-          <template slot-scope="scope" v-if="scope.row.car[0]">{{scope.row.car[0].create_time}}</template>
-        </el-table-column>
-        <el-table-column prop="speed" label="注册时间">
-          <template slot-scope="scope" v-if="scope.row.car[0]">{{scope.row.car[0].install_time}}</template>
-        </el-table-column>
-        <el-table-column prop="speed" label="说明">
-          <template slot-scope="scope" v-if="scope.row.car[0]">{{scope.row.car[0].intro}}</template>
-        </el-table-column>
+        <el-table-column prop="create_time" label="系统时间"></el-table-column>
+        <el-table-column prop="install_time" label="注册时间"></el-table-column>
+        <el-table-column prop="intro" label="说明"></el-table-column>
         <el-table-column
           label="操作">
           <template slot-scope="scope">
@@ -127,16 +113,13 @@ export default {
 
   methods:{
     getCarList(_id){
-      this.$global.httpGetWithToken(this,'car/allOfConfig').then(res=>{
-        console.log(res)
-
-          this.carData = res.data
+      this.$global.httpGetWithToken(this,'car/all').then(res=>{
+        this.carData = res.data
       })
     },
     updateCarDialog(item){
-      if(item.car[0]){
-        this.carEntity = item.car[0]
-        this.carEntity.sn = item.sn
+      if(item){
+        this.carEntity = item
       }else {
         this.carEntity._id = null
       }
