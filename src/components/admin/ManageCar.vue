@@ -14,15 +14,16 @@
         </el-table-column>
         <el-table-column prop="sn" label="设备编号"></el-table-column>
         <el-table-column label="驾驶员">
-          <template slot-scope="scope" v-if="scope.row.user">{{scope.row.user.name}}</template>
+          <template slot-scope="scope" >{{scope.row.user?scope.row.user.name:''}}</template>
         </el-table-column>
         <el-table-column prop="type" label="类型"></el-table-column>
         <el-table-column prop="brand" label="品牌"></el-table-column>
         <el-table-column prop="type_weight" label="吨位"></el-table-column>
+        <el-table-column prop="place" label="位置"></el-table-column>
         <el-table-column label="是否有保险">
           <template slot-scope="scope">{{scope.row.has_insurance ? '是':'否'}}</template>
         </el-table-column>
-        <el-table-column prop="create_time" label="系统时间"></el-table-column>
+        <el-table-column prop="create_time" label="创建时间"></el-table-column>
         <el-table-column prop="install_time" label="注册时间"></el-table-column>
         <el-table-column prop="intro" label="说明"></el-table-column>
 
@@ -48,9 +49,6 @@
             <el-option label="使用" :value=1 ></el-option>
             <el-option label="未使用" :value=0 ></el-option>
           </el-select>
-        </el-form-item>
-        <el-form-item label="gps手机号">
-          <el-input v-model="carEntity.phone"></el-input>
         </el-form-item>
         <el-form-item label="类型">
           <el-select v-model="carEntity.type" placeholder="">
@@ -78,10 +76,13 @@
           <el-input v-model="carEntity.intro"></el-input>
         </el-form-item>
         <el-form-item label="位置">
-          <el-input v-model="carEntity.position"></el-input>
+          <el-input v-model="carEntity.place"></el-input>
         </el-form-item>
-        <el-form-item label="用户">
-
+        <el-form-item label="驾驶员">
+          <el-select v-model="carEntity.user" placeholder="">
+            <el-option label="无" :value="null"></el-option>
+            <el-option v-for="item in userList" :label="item.realName" :value="item._id"></el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -108,6 +109,7 @@ export default {
   name: 'Park',
   data () {
     return {
+      userList:[],
       carData:[],
       carEntity:{
         name:null,
@@ -125,11 +127,17 @@ export default {
     }
   },
   created(){
-    this.getCarList()
+    this.getUserList()
   },
 
   methods:{
-    getCarList(_id){
+    getUserList(){
+      this.$global.httpGetWithToken(this,'user/all').then(res=>{
+        this.userList = res.data
+        this.getCarList()
+      })
+    },
+    getCarList(){
       this.$global.httpGetWithToken(this,'car/all').then(res=>{
         this.carData = res.data
       })
@@ -154,7 +162,7 @@ export default {
       this.carEntity = item
     },
     deleteCar(){
-      this.$global.httpPostWithToken(this,'user/operate',{action:2,data:this.carEntity}).then(res=>{
+      this.$global.httpPostWithToken(this,'car/operate',{action:2,data:this.carEntity}).then(res=>{
         this.isDeleteShow = !this.isDeleteShow
         this.getCarList()
       })

@@ -5,6 +5,7 @@ import Layout from '@/components/layout/Layout'
 
 import ConfigCar from '@/components/admin/ConfigCar'
 import ManageCar from '@/components/admin/ManageCar'
+import ManageCan from '@/components/admin/ManageCan'
 import ManageUser from '@/components/admin/ManageUser'
 import ManageDepartment from '@/components/admin/ManageDepartment'
 
@@ -33,6 +34,11 @@ export default new Router({
           path:'/admin/manageCar',
           component: ManageCar,
           name:'ManageCar'
+        },
+        {
+          path:'/admin/manageCan',
+          component: ManageCan,
+          name:'ManageCan'
         },
         {
           path:'/admin/manageUser',
