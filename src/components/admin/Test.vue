@@ -156,7 +156,6 @@ export default {
       })
     },
     pushHDPic(){
-      var temp = require('../../assets/logo.png')
       axios.post('http://39.104.135.253:8002/api/os/pt/hdIFS/pic?token=a05478dde60e358e29145cdab82abb20',temp).then(res=>{
         console.log(res)
         val.res = JSON.stringify(res.data)

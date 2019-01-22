@@ -1,256 +1,84 @@
 <template>
-<!-- #CAC577 -->
   <div class="main">
-    <div class="amap-wrapper">
-      <el-amap vid="amapDemo" :zoom="map.zoom" :center="map.position" :mapStyle="map.mapStyle">
-        <el-amap-marker
-          v-for="marker in markers"
-          :position="marker.position"
-          :events="marker.events"
-          :visible="marker.visible"
-          :content="marker.content"
-        ></el-amap-marker>
-      </el-amap>
+    <div>
+      <el-carousel height="400px">
+        <el-carousel-item v-for="item in picture" :key="item">
+          <img :src="item" class="main-img">
+        </el-carousel-item>
+      </el-carousel>
+    </div>
+    <div class="item-main">
+      <div v-for="item in blocks" @click=goPage(item[2]) class="item-block">
+        <img :src=item[0] style="max-width:100px;max-height:100px">
+        <h4>{{item[1]}}</h4>
+      </div>
+    </div>
+    <div class="item-bottom">
+      <h2>咨询通告</h2>
+      <img src="../assets/main/welcome.jpg" style="width:100%">
     </div>
   </div>
 </template>
 
 <script>
-import { AMapManager } from "vue-amap";
+
 
 export default {
-  name: "Index",
-  data() {
+  name: 'Main',
+  data () {
     return {
-      isActive: true,
-      parkData: [],
-      map: {
-        zoom: 14,
-        // position:[121.5273285, 31.21715058],
-        position: [121.215772, 31.285732],
-        mapStyle: "amap://styles/33da2327882ec370f6a78c5a6a24a160"
-      },
-      markers: [],
+      msg: 'Welcome to Your Vue.js App',
+      picture:[require('../assets/main/hb_01.jpg'),require('../assets/main/hb_02.jpg'),require('../assets/main/hb_03.jpg'),require('../assets/main/hb_04.jpg')],
+      blocks:[[require('../assets/main/ab_01.png'),'作业地图','Work'],
+              [require('../assets/main/ab_02.png'),'运营概况',''],
+              [require('../assets/main/ab_03.png'),'监控预警',''],
+              [require('../assets/main/ab_04.png'),'绩效考核',''],
+              [require('../assets/main/ab_05.png'),'系统管理','']]
     }
   },
-  created() {
-    // this.getParkList();
+  created(){
   },
-  mounted() {
-    // this.drawLine();
+  mounted(){
+
   },
-  methods: {
-    getParkList(){
-      this.$global.httpGetWithToken(this,'park/all').then(res=>{
-          console.log(res.data)
-          this.parkData = res.data
-          this.addMarker();
-      })
-    },
-    // getParkList() {
-    //   this.$global.httpGetWithToken('')
-    //
-    // },
-    addMarker() {
-      this.parkData.forEach(item => {
-        var tempImg;
-        switch (item.level) {
-          case 1:
-            tempImg = require("../assets/main/a1.png");
-            break;
-          case 2:
-            tempImg = require("../assets/main/a2.png");
-            break;
-          case 3:
-            tempImg = require("../assets/main/a3.png");
-            break;
-          default:
-        }
-        var marker = {
-          content:
-            '<div style="width:44px;text-align:center;"><img src="' +
-            tempImg +
-            '" style="width:100%"><span style="color:white;position:absolute;right:6px;">' +
-            item.number +
-            "</span></div>",
-          position: [item.lat, item.lng],
-          events: {
-            click: () => {
-              this.$router.push({name:"Park2"})
-              // console.log(item);
-            }
-          },
-          visible: true
-        };
-        this.markers.push(marker);
-      });
+  methods:{
+    goPage(val){
+      this.$router.push({name:val})
     }
   }
-};
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-#myChart4 {
-  margin-left: 5px;
+.main{
+  height: 100%;
+  width: 100%;
+  text-align: center;
+  /* background-color: #eeeeee; */
 }
-
-#myChart3 {
-  margin-left: 15px;
+.main-img {
+  height: 400px;
 }
-.duration2 {
-  background-image: url("../assets/main/frame.png");
-  background-size: 100%;
-  background-repeat: no-repeat;
-  height: 220px;
-}
-#myChart2 {
+.item-main {
+  width: 60%;
   margin: auto;
-  /* background-color: rgb(187, 187, 187); */
+  text-align: left;
+  margin-top: 40px;
+  margin-bottom: 40px;
 }
-.top5 {
-  background-image: url("../assets/main/frame.png");
-  background-size: 100%;
-  background-repeat: no-repeat;
-  height: 220px;
-  /* background-color: rgba(245, 21, 21, 0.644); */
-}
+.item-block {
+  /* margin: 20px; */
 
-.top5place {
-  width: 170px;
-  height: 220px;
-  /* background-color: rgba(214, 26, 26, 0.288); */
-  /* display:inline-block; */
-  float: left;
-  /* padding-left:20px; */
-  padding-top: 10px;
-  text-align: right;
-}
-#myChart {
-  display: inline-block;
-  /* background-color: rgba(63, 110, 9, 0.308); */
-}
-
-p {
-  color: white;
-  line-height: 20px;
-  /* display: inline-block; */
-}
-.deepskyblue {
-  color: #00bfff;
-}
-.brightgreen {
-  color: #0be2ed;
-  margin-left: 5px;
-  margin-right: 5px;
-}
-.leftcorner {
-  float: left;
-}
-.rightcorner {
-  float: left;
-  margin-top: 20px;
-}
-
-.subtitlediv {
-  width: 100%;
-  height: 30px;
-  margin-top: 32px;
-  margin-bottom: 15px;
-}
-
-.subtitle {
-  color: deepskyblue;
-  font-size: 14pt;
-  float: left;
-  margin-top: 6px;
-  margin-left: -3px;
-  margin-right: -3px;
-}
-
-.bgcolor {
-  background-color: rgba(46, 211, 252, 0.57);
-}
-
-.dataframe {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-.leftsecleted {
-  position: absolute;
-  width: 152px;
-  height: 41px;
-  margin: 4px;
-  color: #fff;
   text-align: center;
-  padding-top: 11px;
-  font-size: 14pt;
-  cursor: pointer;
-}
-.rightsecleted {
-  left: 160px;
-}
-
-.selectdata {
-  position: relative;
-  width: 320px;
-}
-.title {
-  color: deepskyblue;
-  font-size: 18pt;
-  display: block;
-  margin-bottom: 30px;
-}
-
-.frame {
-  width: 100%;
-}
-
-.dealnumtop1 {
- color:#ddbb00;
-  display: block;
-  margin-bottom: 11px;
-}
-
-.dealframe {
-  margin-right: 13px;
-  padding-top: 19px;
-  font-size: 14pt;
-  width: 150px;
-  height: 100px;
-  text-align: center;
+  width: 33%;
   display: inline-block;
-  background-image: url("../assets/main/dealframe.png");
-  background-repeat: no-repeat;
-  color: #fff;
-  margin-bottom: 28px;
-  background-size: 100%;
+}
+.item-bottom {
+  text-align: left;
+}
+.item-bottom h2 {
+  margin-left: 300px;
 }
 
-.main {
-  font-family: 宋体;
-  font-weight: bold;
-}
-.amap-wrapper {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  z-index: 1;
-}
-
-.leftbar {
-  width: 450px;
-  height: 100%;
-  background-color: rgba(9, 25, 66, 0.95);
-  position: absolute;
-  z-index: 2;
-  padding: 10px;
-  overflow: scroll;
-}
-
-.leftbar::-webkit-scrollbar {
-  display: none;
-}
 </style>

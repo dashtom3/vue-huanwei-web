@@ -12,6 +12,9 @@ import ManageCan from '@/components/admin/ManageCan'
 import ManageUser from '@/components/admin/ManageUser'
 import ManageDepartment from '@/components/admin/ManageDepartment'
 
+import Index from '@/components/Index'
+import Work from '@/components/Work'
+import Login from '@/components/Login'
 import Test from '@/components/admin/Test'
 
 Vue.use(Router)
@@ -20,8 +23,18 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Test',
-      component: Test
+      name: 'Index',
+      component: Index
+    },
+    {
+      path: '/work',
+      name: 'Work',
+      component: Work
+    },
+    {
+      path: '/index',
+      name: 'Index',
+      component: Index
     },
     {
       path: '/admin',

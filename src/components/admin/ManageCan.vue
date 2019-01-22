@@ -9,7 +9,8 @@
         border
         style="width: 100%">
         <el-table-column prop="sn" label="设备编号"></el-table-column>
-        <el-table-column prop="name" label="垃圾桶编号"></el-table-column>
+        <el-table-column prop="name" label="名称"></el-table-column>
+        <el-table-column prop="number" label="编号"></el-table-column>
         <el-table-column label="负责人">
           <template slot-scope="scope" >{{scope.row.user?scope.row.user.realName+','+scope.row.user.phone:''}}</template>
         </el-table-column>
@@ -37,8 +38,11 @@
         <el-form-item label="设备编号">
           <el-input v-model="canEntity.sn"></el-input>
         </el-form-item>
-        <el-form-item label="垃圾桶编号">
+        <el-form-item label="名称">
           <el-input v-model="canEntity.name"></el-input>
+        </el-form-item>
+        <el-form-item label="编号">
+          <el-input v-model="canEntity.number"></el-input>
         </el-form-item>
         <el-form-item label="负责人">
           <el-select v-model="canEntity.user" placeholder="">

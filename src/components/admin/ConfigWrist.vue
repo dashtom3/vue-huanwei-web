@@ -11,7 +11,7 @@
         <el-table-column prop="sn" label="设备编号"></el-table-column>
         <el-table-column prop="gps_card" label="gps手机卡号"></el-table-column>
         <el-table-column prop="speed" label="关联用户信息">
-          <template slot-scope="scope" v-if="scope.row.user[0]">{{scope.row.user[0].name}}</template>
+          <template slot-scope="scope">{{scope.row.user[0]?scope.row.user[0].realName+','+scope.row.user[0].phone:''}}</template>
         </el-table-column>
         <el-table-column
           label="操作">
