@@ -19,7 +19,7 @@
               label="手机" width="100">
             </el-table-column>
             <el-table-column
-              prop="carNumber"
+              prop="name"
               label="车牌">
             </el-table-column>
           </el-table>
@@ -31,11 +31,11 @@
           <el-table
             border
             size="mini"
-            :data="personData"
+            :data="userData"
             @current-change="selectPersonData"
             style="width: 100%">
             <el-table-column
-              prop="personName"
+              prop="realName"
               label="姓名">
             </el-table-column>
             <el-table-column
@@ -64,7 +64,6 @@
                  :offset="item.offset" :content="item.content" :zIndex="item.zIndex"></el-amap-marker>
         </template>
         <el-amap-polyline  :path="polyline.path" :visible="polyline.visible"></el-amap-polyline>
-
       </el-amap>
     </div>
     <div class="right-content">
@@ -76,8 +75,8 @@
           size="mini"
           :data="canData"
           style="width: 100%">
-          <el-table-column label="地区"><template slot-scope="scope"><span>未满</span></template></el-table-column>
-          <el-table-column label="状态"><template slot-scope="scope"><span>未满</span></template></el-table-column>
+          <el-table-column label="地区"><template slot-scope="scope">{{scope.row.can[0]?scope.row.can[0].name:'未知'}}</template></el-table-column>
+          <el-table-column label="状态"><template slot-scope="scope">{{scope.row.isFull?'满':'未满'}}</template></el-table-column>
           <el-table-column prop="temperature" label="温度"></el-table-column>
         </el-table>
       </div>
@@ -119,7 +118,7 @@ export default {
       isSelectOpen:false,
       loading:false,
       datePicker:[new Date(new Date().getTime()-6*60*60*1000),new Date()],
-      personData:[],
+      userData:[],
       canData:[],
       carData:[],
       selectData:null,
@@ -174,6 +173,7 @@ export default {
     async init(){
       await this.getCan()
       await this.getCar()
+      await this.getUser()
       // await this.getPosition()
       // this.tInterval = setInterval(()=>{
       //   this.getPosition()
@@ -189,16 +189,20 @@ export default {
     },
     async getCar(){
       const res = await this.$global.httpGetWithToken(this,'car/all')
-      // this.binData = res.data
       console.log(res)
       this.carData = res.data
     },
-    async getWrist(){
-      const res = await this.$global.httpGet(this,'user/all')
+    async getUser(){
+      const res = await this.$global.httpGetWithToken(this,'user/all')
       // this.binData = res.data
       console.log(res)
+      this.userData = res.data
     },
+    async getData(){
+      this.$global.httpGet(this,'user/all').then(res=>{
 
+      })
+    },
     cleanPoly(){
       this.polyline.path = []
       this.polyline.visible = false
@@ -239,10 +243,8 @@ export default {
       })
     },
     showReplay(item){
-
       this.selectData = item[0].data
       this.isSelectOpen = !this.isSelectOpen
-
     },
     selectDate(){
       // console.log(this.datePicker,this.$dtime(this.datePicker[0]).format('YYYY-MM-DD HH:mm:ss'),this.$dtime(this.datePicker[1]).format('YYYY-MM-DD HH:mm:ss'))

@@ -28,9 +28,9 @@
       </div>
       <section class="app-main">
         <transition name="fade-transform" mode="out-in">
-          <keep-alive>
+          <!-- <keep-alive> -->
             <router-view />
-          </keep-alive>
+          <!-- </keep-alive> -->
         </transition>
       </section>
     </div>

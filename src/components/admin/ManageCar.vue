@@ -13,8 +13,8 @@
           <template slot-scope="scope">{{scope.row.state == 1 ? '使用':'未使用'}}</template>
         </el-table-column>
         <el-table-column prop="sn" label="设备编号"></el-table-column>
-        <el-table-column label="驾驶员">
-          <template slot-scope="scope" >{{scope.row.user?scope.row.user.name:''}}</template>
+        <el-table-column label="驾驶员" width="160px">
+          <template slot-scope="scope" >{{scope.row.user?scope.row.user.realName+','+scope.row.user.phone:''}}</template>
         </el-table-column>
         <el-table-column prop="type" label="类型"></el-table-column>
         <el-table-column prop="brand" label="品牌"></el-table-column>
