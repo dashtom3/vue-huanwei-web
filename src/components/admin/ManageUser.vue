@@ -14,6 +14,7 @@
         <el-table-column prop="phone" label="手机号"></el-table-column>
         <el-table-column prop="id_card" label="身份证号"></el-table-column>
         <el-table-column prop="title" label="职务"></el-table-column>
+        <el-table-column prop="kind" label="分工"></el-table-column>
         <el-table-column prop="type" label="类型"></el-table-column>
         <el-table-column prop="boss" label="负责人"></el-table-column>
         <el-table-column  label="部门主管信息">
@@ -42,6 +43,7 @@
         <el-form-item label="手机号"><el-input v-model="userEntity.phone"></el-input></el-form-item>
         <el-form-item label="身份证号"><el-input v-model="userEntity.id_card"></el-input></el-form-item>
         <el-form-item label="职务"><el-input v-model="userEntity.title"></el-input></el-form-item>
+        <el-form-item label="分工"><el-input v-model="userEntity.kind"></el-input></el-form-item>
         <el-form-item label="类型">
           <el-select v-model="userEntity.type" placeholder="">
             <el-option v-for="(item,index) in $global.ENUM.USER_TYPE" :label="item" :value="index"></el-option>
@@ -94,6 +96,7 @@ export default {
         id_card:null,
         phone:null,
         title:null,
+        kind:null,
         type:null,
         boss:null,
         department:null,
