@@ -8,20 +8,11 @@
             border
             size="mini"
             :data="carData"
-            @current-change="selectCarData"
+            @current-change="selectTableData"
             style="width: 100%">
-            <el-table-column
-              prop="carName"
-              label="姓名">
-            </el-table-column>
-            <el-table-column
-              prop="phone"
-              label="手机" width="100">
-            </el-table-column>
-            <el-table-column
-              prop="name"
-              label="车牌">
-            </el-table-column>
+            <el-table-column prop="carName" label="姓名"><template slot-scope="scope">{{scope.row.user?scope.row.user.realName:'未知'}}</template></el-table-column>
+            <el-table-column prop="phone" label="手机" width="100"><template slot-scope="scope">{{scope.row.user?scope.row.user.phone:'未知'}}</template></el-table-column>
+            <el-table-column prop="name" label="车牌"></el-table-column>
           </el-table>
         </div>
       </div>
@@ -32,7 +23,7 @@
             border
             size="mini"
             :data="userData"
-            @current-change="selectPersonData"
+            @current-change="selectTableData"
             style="width: 100%">
             <el-table-column
               prop="realName"
@@ -59,10 +50,10 @@
       </div>
 
       <el-amap vid="amapDemo" :zoom="map.zoom" :center="map.position">
-        <template v-for="items in markers">
+          <template v-for="items in markers">
           <el-amap-marker v-for="item in items" :position="item.position" :events="item.events" :visible="item.visible"
                  :offset="item.offset" :content="item.content" :zIndex="item.zIndex"></el-amap-marker>
-        </template>
+          </template>
         <el-amap-polyline  :path="polyline.path" :visible="polyline.visible"></el-amap-polyline>
       </el-amap>
     </div>
@@ -74,8 +65,9 @@
           border
           size="mini"
           :data="canData"
+          @current-change="selectTableData"
           style="width: 100%">
-          <el-table-column label="地区"><template slot-scope="scope">{{scope.row.can[0]?scope.row.can[0].name:'未知'}}</template></el-table-column>
+          <el-table-column label="地区"><template slot-scope="scope">{{scope.row.can[0]?scope.row.can[0].name:'未知'}}度</template></el-table-column>
           <el-table-column label="状态"><template slot-scope="scope">{{scope.row.isFull?'满':'未满'}}</template></el-table-column>
           <el-table-column prop="temperature" label="温度"></el-table-column>
         </el-table>
@@ -117,7 +109,7 @@ export default {
       checkSelect:'全部',
       isSelectOpen:false,
       loading:false,
-      datePicker:[new Date(new Date().getTime()-6*60*60*1000),new Date()],
+      datePicker:[new Date(parseInt(this.$dtime(this.$dtime(new Date()).format('YYYY-MM-DD')+' 06:00:00').format('x'))),new Date()],
       userData:[],
       canData:[],
       carData:[],
@@ -131,9 +123,14 @@ export default {
         position:[121.5273285, 31.21715058]
       },
       markers:[],
-      tInterval:null,
-      sInterval:null,
+      state:{
+        tInterval:null,
+        sInterval:null,
+        num:0
+      },
+
       number:0,
+
     }
   },
   created(){
@@ -142,28 +139,20 @@ export default {
   mounted(){
 
   },
+  beforeDestory(){
+    if(this.state.tInterval){
+      clearInterval(this.state.tInterval)
+    }
+    if(this.state.sInterval){
+      clearInterval(this.state.sInterval)
+    }
+  },
   methods:{
     clickCheckBox(val){
-      switch (val) {
-        case 0:
-          this.showMarkers()
-          break;
-        case 1:
-          this.showMarkers('person')
-          break;
-        case 2:
-          this.showMarkers('car')
-          break;
-        case 3:
-          this.showMarkers('bin')
-          break;
-        default:
-      }
-    },
-    showMarkers(val){
       this.markers.forEach(item=>{
-        if(val == null || item[0].data.kind == val){
+        if(val == 0 || item[0].data.kind+1 == val){
           item[0].visible = true
+          item[1].visible =false
         }else {
           item[0].visible = false
           item[1].visible = false
@@ -174,72 +163,79 @@ export default {
       await this.getCan()
       await this.getCar()
       await this.getUser()
+      this.getCarData()
       // await this.getPosition()
-      // this.tInterval = setInterval(()=>{
-      //   this.getPosition()
-      // },10000)
-      // this.sInterval = setInterval(()=>{
-      //   this.nextStep()
-      // },1000)
+      this.state.tInterval = setInterval(()=>{
+        this.getCarData()
+        this.state.num++
+        if(this.state.num >3){
+          this.state.num = 0
+          this.getUser()
+        }
+      },20000)
+      this.state.sInterval = setInterval(()=>{
+        this.nextStep()
+      },1000)
     },
     async getCan(){
       const res = await this.$global.httpGetWithToken(this,'can/allOfConfig')
       this.canData = res.data
-      console.log(res)
+      this.canData.forEach(item=>{
+        this.addCanMarker(item)
+      })
     },
     async getCar(){
       const res = await this.$global.httpGetWithToken(this,'car/all')
-      console.log(res)
       this.carData = res.data
     },
     async getUser(){
-      const res = await this.$global.httpGetWithToken(this,'user/all')
-      // this.binData = res.data
-      console.log(res)
+      const res = await this.$global.httpGetWithToken(this,'user/allData')
       this.userData = res.data
+      res.data.forEach(item=>{
+        this.addUserMarker(item)
+      })
     },
-    async getData(){
-      this.$global.httpGet(this,'user/all').then(res=>{
-
+    async getCarData(){
+      this.$global.httpGetWithToken(this,'car/data').then(res=>{
+        res.data.forEach(item=>{
+          this.addCarMarker(item)
+        })
+        console.log(this.markers)
       })
     },
     cleanPoly(){
       this.polyline.path = []
       this.polyline.visible = false
     },
-    selectCarData(val){
+    selectTableData(val){
       this.map.zoom = 13
+      var temp = false
       this.markers.forEach(item=>{
-        if(item[0].data.id == val.employeeId){
+        if(item[0].data.sn == val.sn){
+          temp = true
           this.map.position = item[0].position
           item[1].visible = true
         }else {
           item[1].visible = false
         }
       })
-    },
-    selectPersonData(val){
-      this.markers.forEach(item=>{
-        if(item[0].data.id == val.employeeId){
-          this.map.zoom = 13
-          this.map.position = item[0].position
-          item[1].visible = true
-        }else {
-          item[1].visible = false
-        }
-      })
+      if(temp == false){
+        this.$global.error(this,'暂无坐标信息')
+      }
     },
     nextStep(){
       this.markers.forEach(item=>{
-        if(item[0].data.times < 10){
-          var temp = [item[0].position[0]+(item[0].data.target[0]-item[0].position[0])/(10-item[0].data.times),item[0].position[1]+(item[0].data.target[1]-item[0].position[1])/(10-item[0].data.times)]
-          item[0].position = temp
-          item[1].position = temp
-        }else {
-          item[0].position =[item[0].data.target[0],item[0].data.target[1]]
-          item[1].position =[item[0].data.target[0],item[0].data.target[1]]
+        if(item[0].data.kind == 1){
+          if(item[0].data.times < 10){
+            var temp = [item[0].position[0]+(item[0].data.target[0]-item[0].position[0])/(10-item[0].data.times),item[0].position[1]+(item[0].data.target[1]-item[0].position[1])/(10-item[0].data.times)]
+            item[0].position = temp
+            item[1].position = temp
+          }else {
+            item[0].position =[item[0].data.target[0],item[0].data.target[1]]
+            item[1].position =[item[0].data.target[0],item[0].data.target[1]]
+          }
+          item[0].data.times++;
         }
-        item[0].data.times++;
       })
     },
     showReplay(item){
@@ -250,151 +246,166 @@ export default {
       // console.log(this.datePicker,this.$dtime(this.datePicker[0]).format('YYYY-MM-DD HH:mm:ss'),this.$dtime(this.datePicker[1]).format('YYYY-MM-DD HH:mm:ss'))
       this.isSelectOpen = !this.isSelectOpen
       this.loading = true
-      var temp = {startDay:this.$dtime(this.datePicker[0]).format('YYYY-MM-DD HH:mm:ss'),endDay:this.$dtime(this.datePicker[1]).format('YYYY-MM-DD HH:mm:ss')}
-      this.$global.httpGet(this,'Stores/'+this.selectData.id,temp).then(res=>{
-        this.loading = false
+      if(this.selectData.kind == 0){
 
-        var tempRes = []
-        var tempQ = []
-        res.data.forEach(item=>{
-          var tempCoord = this.$transform.wgs84togcj02(item.longitude,item.latitude)
-          item.longitude = tempCoord[0]
-          item.latitude = tempCoord[1]
-          if(tempQ.length == 0) {
-            tempQ = [item.longitude,item.latitude]
-          }else if(tempQ[0] != item.longitude || tempQ[1] != item.latitude){
-            tempRes.push([item.longitude,item.latitude])
-          }
+      }else {
+        var temp = {from_time:this.$dtime(this.datePicker[0]).format('YYYY-MM-DD HH:mm:ss'),to_time:this.$dtime(this.datePicker[1]).format('YYYY-MM-DD HH:mm:ss')}
+        temp.sn = this.selectData.sn
+        this.$global.httpGetWithToken(this,'car/historyData',temp).then(res=>{
+          this.loading = false
+            var tempRes = []
+            var tempQ = []
+            res.data.forEach(item=>{
+              var tempCoord = this.$transform.wgs84togcj02(item.lng,item.lat)
+              item.lng = tempCoord[0]
+              item.lat = tempCoord[1]
+              if(tempQ.length == 0) {
+                tempQ = [item.lng,item.lat]
+              }else if(tempQ[0] != item.lng || tempQ[1] != item.lat){
+                tempRes.push([item.lng,item.lat])
+              }
+            })
+            this.polyline.path = tempRes
+            this.polyline.visible = true
+        }).catch(res=>{
+          this.loading = false
         })
-        this.polyline.path = tempRes
-        this.polyline.visible = true
-      })
+      }
 
     },
-    // addMarker(data){
-    //   data.forEach((item,index)=>{
-    //     var tempCoord = this.$transform.wgs84togcj02(item.longitude,item.latitude)
-    //     item.longitude = tempCoord[0]
-    //     item.latitude = tempCoord[1]
-    //     if(index == 0 && this.markers.length <1){
-    //       this.map.position = [item.longitude,item.latitude]
-    //     }
-    //     var temp = false
-    //     this.markers.forEach(marker=>{
-    //       if(marker[0].data.id == item.employeeId){
-    //         temp = true
-    //         marker[0].data.target = [item.longitude,item.latitude]
-    //         if(marker[0].data.kind == 'car'){
-    //           var tempImg = item.longitude > marker[0].position[0]? require('../assets/car_r.png'):require('../assets/car_l.png')
-    //           var nameCarType = marker[0].data.carType
-    //           if(nameCarType){
-    //             if(nameCarType.indexOf('洒水车')!=-1){
-    //               tempImg = item.longitude > marker[0].position[0]? require('../assets/watering_car_l.png'):require('../assets/watering_car_r.png')
-    //             }else if(nameCarType.indexOf('洗扫车')!=-1){
-    //               tempImg = item.longitude > marker[0].position[0]? require('../assets/clean_car_l.png'):require('../assets/clean_car_r.png')
-    //             }else if(nameCarType.indexOf('吊装车')!=-1){
-    //               tempImg = item.longitude > marker[0].position[0]? require('../assets/crane_l.png'):require('../assets/crane_r.png')
-    //             }
-    //           }
-    //           marker[0].content = '<div style="width:60px;text-align:center"><img src="'+tempImg+'" style="width:25px"><div style="font-size:12px;background-color:white;margin-top:-10px">'+marker[0].data.carNumber+'</div></div>'
-    //         }
-    //         marker[0].data.times = 0
-    //         if(this.getFlatternDistance(marker[0].position[0],marker[0].position[1],item.longitude,item.latitude)>2000){
-    //           marker[0].position = [item.longitude,item.latitude],
-    //           marker[1].position = [item.longitude,item.latitude]
-    //         }
-    //       }
-    //     })
-    //     if(temp == false){
-    //       var marker = [{
-    //           content: '',
-    //           position:[item.longitude,item.latitude],
-    //           offset:[0,0],
-    //           data:{
-    //             id:item.employeeId,
-    //             target:[item.longitude,item.latitude],
-    //             times:0,
-    //             kind:item.kind
-    //           },
-    //           events: {
-    //             click: () => {
-    //               // if(marker[0].data.kind !='bin'){
-    //               this.markers.forEach(item=>{
-    //                 item[1].visible = false
-    //               })
-    //               marker[1].visible = !marker[1].visible
-    //               // }
-    //             }
-    //           },
-    //           zIndex:item.kind == 'car'? 2:1,
-    //           visible:true
-    //       },{
-    //           content: '',
-    //           position:[item.longitude,item.latitude],
-    //           offset:[40,-20],
-    //           events: {
-    //             click: () => {
-    //               // this.$router.push({name:"user_data",params:""})
-    //               this.showReplay(marker)
-    //               marker[1].visible = !marker[1].visible
-    //             }
-    //           },
-    //           zIndex:3,
-    //           visible:false
-    //       }]
-    //       //
-    //       var tempImg
-    //       if(item.kind == 'bin'){
-    //         tempImg = require('../assets/bin.png')
-    //         marker[0].content = '<div style="width:25px;text-align:center;"><img src="'+tempImg+'" style="width:100%"></div>'
-    //         // marker[1].content = '<div style="width:200px;height:30px;text-align:left;background-color:white;border-radius:4px;border:1px solid #666666;padding:4px"><el-button size="mini" style="background-color:#cccccc;padding:3px;color:#333333 !important;">回放</el-button><span style="padding-left:5px">编号:'+item.employeeId+'</span></div>',
-    //         this.binData.forEach(item2=>{
-    //           if(item2.employeeId = item.employeeId){
-    //             var tempR = item2.currentV != item2.maxV ? '未满':'已满'
-    //             marker[1].content = '<div style="width:200px;height:140px;text-align:left;background-color:white;border-radius:4px;border:1px solid #666666;padding:4px">'
-    //             +'<table style="width:100%"><tr><td>编号</td><td>'+item2.employeeId+'</td></tr><tr><td>名称</td><td>'+item2.binName+'</td></tr><tr><td>乡镇</td><td>'+item2.area+'</td></tr><tr><td>温度</td><td>'+item2.temperature+'</td></tr><tr><td>容量</td><td>'+tempR+'</td></tr></table></div>'
-    //           }
-    //         })
-    //       }else if(item.kind == 'car'){
-    //         tempImg = require('../assets/car_l.png')
-    //         marker[0].content = '<div style="width:25px;text-align:center;"><img src="'+tempImg+'" style="width:100%"></div>'
-    //         this.carData.forEach(item2=>{
-    //           if(item2.employeeId == item.employeeId){
-    //             var tempQQ = item2.carNumber == '临时牌照'? item2.carName:item2.carNumber
-    //             marker[0].data.carNumber = tempQQ
-    //             marker[0].data.carType = item2.carType
-    //             console.log(item2.carType)
-    //             if(item2.carType.indexOf('洒水车')!=-1){
-    //               tempImg =  require('../assets/watering_car_l.png')
-    //             }else if(item2.carType.indexOf('洗扫车')!=-1){
-    //               tempImg = require('../assets/clean_car_l.png')
-    //             }else if(item2.carType.indexOf('吊装车')!=-1){
-    //               tempImg = require('../assets/crane_l.png')
-    //             }
-    //             marker[0].content = '<div style="width:60px;text-align:center"><img src="'+tempImg+'" style="width:25px"><div style="font-size:12px;background-color:white;margin-top:-10px">'+tempQQ+'</div></div>'
-    //             marker[1].content = '<div style="width:200px;height:160px;text-align:left;background-color:white;border-radius:4px;border:1px solid #666666;padding:4px">'
-    //             +'<el-button size="mini" style="background-color:#cccccc;padding:3px;color:#333333 !important;">回放</el-button><span style="padding-left:5px">编号:'+item.employeeId+'</span>'
-    //             +'<div style="width=100%;height:1px;background-color:#999999;margin-top:3px"></div>'
-    //             +'<table style="width:100%"><tr><td>车牌号</td><td>'+item2.carNumber+'</td></tr><tr><td>类型</td><td>'+item2.carType+'</td></tr><tr><td>姓名</td><td>'+item2.carName+'</td></tr><tr><td>乡镇</td><td>'+item2.area+'</td></tr><tr><td>手机号</td><td>'+item2.phone+'</td></tr></table></div>'
-    //           }
-    //         })
-    //       }else if(item.kind == 'person'){
-    //         tempImg = require('../assets/person.png')
-    //         marker[0].content = '<div style="width:25px;text-align:center;"><img src="'+tempImg+'" style="width:100%"></div>'
-    //         this.personData.forEach(item2=>{
-    //           if(item2.employeeId == item.employeeId){
-    //             marker[0].content = '<div style="width:40px;text-align:center;"><img src="'+tempImg+'" style="width:25px"><div style="font-size:12px;background-color:white;margin-top:-10px">'+item2.personName+'</div></div>'
-    //             marker[1].content = '<div style="width:200px;height:180px;text-align:left;background-color:white;border-radius:4px;border:1px solid #666666;padding:4px">'
-    //             +'<el-button size="mini" style="background-color:#cccccc;padding:3px;color:#333333 !important;">回放</el-button><span style="padding-left:5px">编号:'+item.employeeId+'</span>'
-    //             +'<div style="width=100%;height:1px;background-color:#999999;margin-top:3px"></div>'
-    //             +'<table style="width:100%"><tr><td>姓名</td><td>'+item2.personName+'</td></tr><tr><td>职务</td><td>'+item2.job+'</td></tr><tr><td>工种</td><td>'+item2.kind+'</td></tr><tr><td>乡镇</td><td>'+item2.area+'</td></tr><tr><td>手机</td><td>'+item2.phone+'</td></tr></table></div>'
-    //           }
-    //         })
-    //       }
-    //       this.markers.push(marker)
-    //     }
-    //   })
-    // }
+    addUserMarker(data){
+      var temp
+      if(data.wrist[0]){
+        data.sn = data.sn_wrist
+        temp = data.wrist[0]
+      }else if(data.card[0]){
+        data.sn = data.sn_card
+        temp = data.card[0]
+      }
+      if(temp && temp.lng){
+        var tempCoord = this.$transform.wgs84togcj02(temp.lng,temp.lat)
+        data.lng = tempCoord[0]
+        data.lat = tempCoord[1]
+        var hasPeople = false
+        this.markers.forEach(item=>{
+          if(item[0].data.sn == data.sn){
+            hasPeople = true
+            item[0].position = [data.lng,data.lat],
+            item[1].position = [data.lng,data.lat]
+          }
+        })
+        if(hasPeople == false){
+          var marker = this.setBasicMarker(data,0)
+          var tempImg = require('../assets/work/person.png')
+          marker[0].content = '<div style="width:40px;text-align:center;"><img src="'+tempImg+'" style="width:25px"><div style="font-size:12px;background-color:white;margin-top:-10px;border-radius:4px;border:1px solid #999999">'+data.realName+'</div></div>'
+          marker[1].content = '<div style="width:200px;height:180px;text-align:left;background-color:white;border-radius:4px;border:1px solid #666666;padding:4px">'
+          +'<el-button size="mini" style="background-color:#cccccc;padding:3px;color:#333333 !important;">回放</el-button><span style="padding-left:5px">编号:'+data.sn+'</span>'
+          +'<div style="width=100%;height:1px;background-color:#999999;margin-top:3px"></div>'
+          +'<table style="width:100%"><tr><td>姓名</td><td>'+data.realName+'</td></tr><tr><td>职务</td><td>'+data.title+'</td></tr><tr><td>工种</td><td>'+data.kind+'</td></tr><tr><td>乡镇</td><td>'+data.place+'</td></tr><tr><td>手机</td><td>'+data.phone+'</td></tr></table></div>'
+          this.markers.push(marker)
+        }
+      }
+    },
+    addCanMarker(data){
+          //垃圾桶
+          var tempCoord = this.$transform.wgs84togcj02(data.lng,data.lat)
+          data.lng = tempCoord[0]
+          data.lat = tempCoord[1]
+          if(data.can[0]){
+            data.lng = data.can[0].lng
+            data.lat = data.can[0].lat
+            if(Object.keys(this.markers) == 0){
+              this.map.position = [data.lng,data.lat]
+            }
+            var marker = this.setBasicMarker(data,2)
+            marker[0].content = '<div style="width:25px;text-align:center;"><img src="'+require('../assets/work/bin.png')+'" style="width:100%"></div>'
+            marker[1].content = '<div style="width:200px;height:140px;text-align:left;background-color:white;border-radius:4px;border:1px solid #666666;padding:4px">'
+            +'<table style="width:100%"><tr><td>编号</td><td>'+data.sn+'</td></tr><tr><td>名称</td><td>'+(data.can[0]?data.can[0].name:'未知')+'</td></tr><tr><td>乡镇</td><td>'+(data.can[0]?data.can[0].place:'未知')+'</td></tr><tr><td>温度</td><td>'+data.temperature+'度</td></tr><tr><td>容量</td><td>'+(data.isFull?'满':'未满')+'</td></tr></table></div>'
+            this.markers.push(marker)
+            // console.log(this.markers[data.sn])
+          }
+    },
+    addCarMarker(data){
+      var tempCoord = this.$transform.wgs84togcj02(data.lng,data.lat)
+      data.lng = tempCoord[0]
+      data.lat = tempCoord[1]
+      var temp = false
+      this.markers.forEach(item=>{
+        if(item[0].data.sn == data.sn){
+          temp = true
+          item[0].data.target = [data.lng,data.lat],
+          item[0].data.times = 0
+          var tempImg = data.lng > item[0].position[0] ? require('../assets/work/'+this.$global.ENUM.CAR_PIC[item[0].data.type][0]):require('../assets/work/'+this.$global.ENUM.CAR_PIC[item[0].data.type][1])
+          item[0].content = '<div style="width:60px;text-align:center"><img src="'+tempImg+'" style="width:25px"><div style="font-size:12px;background-color:white;margin-top:-10px;border-radius:4px;border:1px solid #999999">'+item[0].data.name+'</div></div>'
+          if(this.$global.getFlatternDistance(item[0].position[0],item[0].position[1],data.lng,data.lat)>2000){
+            item[0].position = [data.lng,data.lat],
+            item[1].position = [data.lng,data.lat]
+          }
+
+        }
+      })
+      if(temp == false){
+        this.carData.forEach(item=>{
+          if(item.sn == data.sn){
+            var marker = this.setBasicMarker(data,1)
+            // console.log(marker[0],this.$global.ENUM.CAR_PIC[item.type][0],item.type)
+            marker[0].content = '<div style="width:60px;text-align:center"><img src="'+require('../assets/work/'+this.$global.ENUM.CAR_PIC[item.type][0])+'" style="width:25px"><div style="font-size:12px;background-color:white;margin-top:-10px;border-radius:4px;border:1px solid #999999">'+item.name+'</div></div>'
+            marker[0].zIndex = 2
+            marker[0].data.target = [data.lng,data.lat],
+            marker[0].data.type = item.type
+            marker[0].data.name = item.name
+            marker[0].data.times = 0
+            marker[1].content = '<div style="width:200px;height:160px;text-align:left;background-color:white;border-radius:4px;border:1px solid #666666;padding:4px">'
+             +'<el-button size="mini" style="background-color:#cccccc;padding:3px;color:#333333 !important;">回放</el-button><span style="padding-left:5px">编号:'+item.sn+'</span>'
+             +'<div style="width=100%;height:1px;background-color:#999999;margin-top:3px"></div>'
+             +'<table style="width:100%"><tr><td>车牌号</td><td>'+item.name+'</td></tr><tr><td>类型</td><td>'+item.type+'</td></tr><tr><td>姓名</td><td>'+(item.user? item.user.realName:'未知') +'</td></tr><tr><td>乡镇</td><td>'+item.place+'</td></tr><tr><td>手机号</td><td>'+(item.user? item.user.phone:'未知')+'</td></tr></table></div>'
+             this.markers.push(marker)
+          }
+        })
+      }
+    },
+    setBasicMarker(data,kind){
+      var marker = [{
+                content: '',
+                position:[data.lng,data.lat],
+                offset:[0,0],
+                data:{
+                  // id:item.employeeId,
+                  target:[data.lng,data.lat],
+                  times:0,
+                  sn:data.sn,
+                  kind:kind
+                },
+                events: {
+                  click: () => {
+                    this.markers.forEach(item=>{
+                      if(item[0].data.sn == data.sn){
+                        item[1].visible = !item[1].visible
+                      }else{
+                        item[1].visible = false
+                      }
+                    })
+                  }
+                },
+                zIndex:1,
+                visible:true
+            },{
+                content: '',
+                position:[data.lng,data.lat],
+                offset:[40,-20],
+                events: {
+                  click: () => {
+                    if(kind != 2){
+                      this.showReplay(marker)
+                    }
+                    marker[1].visible = false
+                  }
+                },
+                zIndex:3,
+                visible:false
+            }]
+      return marker
+    },
   }
 }
 </script>

@@ -14,6 +14,8 @@ import ManageDepartment from '@/components/admin/ManageDepartment'
 
 import Index from '@/components/Index'
 import Work from '@/components/Work'
+import Business from '@/components/Business'
+import Alert from '@/components/Alert'
 import Login from '@/components/Login'
 import Test from '@/components/admin/Test'
 
@@ -30,6 +32,16 @@ export default new Router({
       path: '/work',
       name: 'Work',
       component: Work
+    },
+    {
+      path: '/alert',
+      name: 'Alert',
+      component: Alert
+    },
+    {
+      path: '/business',
+      name: 'Business',
+      component: Business
     },
     {
       path: '/index',

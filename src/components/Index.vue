@@ -30,10 +30,10 @@ export default {
       msg: 'Welcome to Your Vue.js App',
       picture:[require('../assets/main/hb_01.jpg'),require('../assets/main/hb_02.jpg'),require('../assets/main/hb_03.jpg'),require('../assets/main/hb_04.jpg')],
       blocks:[[require('../assets/main/ab_01.png'),'作业地图','Work'],
-              [require('../assets/main/ab_02.png'),'运营概况',''],
-              [require('../assets/main/ab_03.png'),'监控预警',''],
+              [require('../assets/main/ab_02.png'),'运营概况','Business'],
+              [require('../assets/main/ab_03.png'),'监控预警','Alert'],
               [require('../assets/main/ab_04.png'),'绩效考核',''],
-              [require('../assets/main/ab_05.png'),'系统管理','']]
+              [require('../assets/main/ab_05.png'),'系统管理','ManageUser']]
     }
   },
   created(){
@@ -43,7 +43,11 @@ export default {
   },
   methods:{
     goPage(val){
-      this.$router.push({name:val})
+      // this.$router.push({name:val})
+      const { href } = this.$router.resolve({
+          name: val
+        })
+      window.open(href, '_blank')
     }
   }
 }

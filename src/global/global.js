@@ -8,6 +8,7 @@ export default{
   // },
   ENUM:{
     CAR:['洒水车','洗扫车','吊装车','扫地车','管理用车'],
+    CAR_PIC:{'洒水车':['watering_car_l.png','watering_car_r.png'],'洗扫车':['clean_car_l.png','clean_car_r.png'],'吊装车':['crane_l.png','crane_r.png'],'扫地车':['car_l.png','car_r.png'],'管理用车':['car_l.png','car_r.png']},
     CAR_WEIGHT:['4吨','5吨','8吨'],
     USER_TYPE:['超级管理员','普通用户']
   },

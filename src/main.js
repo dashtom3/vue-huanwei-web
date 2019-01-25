@@ -11,6 +11,7 @@ import VueAMap from 'vue-amap';
 import global from './global/global.js'
 import echarts from 'echarts'
 import dtime from 'time-formater'
+import transform from 'coordtransform'
 
 Vue.config.productionTip = false
 
@@ -21,6 +22,7 @@ Vue.use(VueAMap);
 Vue.prototype.$global = global
 Vue.prototype.$echarts = echarts
 Vue.prototype.$dtime = dtime
+Vue.prototype.$transform = transform
 
 VueAMap.initAMapApiLoader({
   // 高德的key
