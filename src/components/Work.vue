@@ -194,13 +194,14 @@ export default {
       res.data.forEach(item=>{
         this.addUserMarker(item)
       })
+        console.log(this.markers)
     },
     async getCarData(){
       this.$global.httpGetWithToken(this,'car/data').then(res=>{
         res.data.forEach(item=>{
           this.addCarMarker(item)
         })
-        console.log(this.markers)
+        // console.log(this.markers)
       })
     },
     cleanPoly(){
@@ -281,6 +282,9 @@ export default {
       }else if(data.card[0]){
         data.sn = data.sn_card
         temp = data.card[0]
+      }else if(data.app[0]){
+        data.sn = data.sn_app
+        temp = data.app[0]
       }
       if(temp && temp.lng){
         var tempCoord = this.$transform.wgs84togcj02(temp.lng,temp.lat)

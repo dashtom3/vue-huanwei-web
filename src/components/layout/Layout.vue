@@ -46,7 +46,7 @@ export default {
       // {name:'设备配置',icon:'el-icon-menu',data:[['车辆配置','ConfigCar',''],['垃圾桶配置','ConfigCan',''],['电子工牌配置','ConfigCard',''],['手环配置','ConfigWrist','']]},
       // {name:'基础管理',icon:'el-icon-edit',data:[['人员管理','ManageUser',''],['车辆管理','ManageCar',''],['垃圾桶管理','ManageCan',''],['部门管理','ManageDepartment','']]},
       // {name:'接口测试',icon:'el-icon-edit',data:[['接口测试','Test','']]}],
-      data:[{name:'数据绩效',icon:'el-icon-document',data:[['车辆数据','ManageUser',''],['人员数据','ManageUser','']]},{name:'系统配置',icon:'el-icon-menu',data:[['车辆配置','ConfigCar',''],['垃圾桶配置','ConfigCan',''],['电子工牌配置','ConfigCard',''],['手环配置','ConfigWrist','']]},
+      data:[{name:'数据绩效',icon:'el-icon-document',data:[['车辆数据','ManageUser',''],['人员数据','ManageUser','']]},{name:'系统配置',icon:'el-icon-menu',data:[['车辆配置','ConfigCar',''],['垃圾桶配置','ConfigCan',''],['电子工牌配置','ConfigCard',''],['手环配置','ConfigWrist',''],['App配置','ConfigApp','']]},
       {name:'基础数据',icon:'el-icon-edit',data:[['人员管理','ManageUser',''],['部门管理','ManageDepartment',''],['车辆管理','ManageCar',''],['垃圾桶管理','ManageCan','']]}],
       selectData:0,
     }

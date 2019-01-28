@@ -1,7 +1,7 @@
 import axios from 'axios'
 export default{
   baseUrl: 'http://localhost:6801/',
-  // baseUrl: 'http://39.104.135.253:8002/',
+  // baseUrl: 'http://61.190.61.78:6801/',
   // goPath: function (obj, url) {
   //   document.body.scrollTop = 0 + 'px'
   //   obj.$router.push({ name: url })

@@ -23,6 +23,7 @@
         <el-table-column prop="place" label="地点"></el-table-column>
         <el-table-column prop="sn_card" label="电子工牌编号"></el-table-column>
         <el-table-column prop="sn_wrist" label="手环编号"></el-table-column>
+        <el-table-column prop="sn_app" label="app编号"></el-table-column>
         <el-table-column
           label="操作">
           <template slot-scope="scope">
@@ -62,6 +63,7 @@
         <el-form-item label="地点"><el-input v-model="userEntity.place"></el-input></el-form-item>
         <el-form-item label="电子工牌编号"><el-input v-model="userEntity.sn_card"></el-input></el-form-item>
         <el-form-item label="手环编号"><el-input v-model="userEntity.sn_wrist"></el-input></el-form-item>
+        <el-form-item label="app编号"><el-input v-model="userEntity.sn_app"></el-input></el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="isUpdateShow = false">取 消</el-button>

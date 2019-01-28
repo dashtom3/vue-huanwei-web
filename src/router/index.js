@@ -7,6 +7,7 @@ import ConfigCar from '@/components/admin/ConfigCar'
 import ConfigCan from '@/components/admin/ConfigCan'
 import ConfigCard from '@/components/admin/ConfigCard'
 import ConfigWrist from '@/components/admin/ConfigWrist'
+import ConfigApp from '@/components/admin/ConfigApp'
 import ManageCar from '@/components/admin/ManageCar'
 import ManageCan from '@/components/admin/ManageCan'
 import ManageUser from '@/components/admin/ManageUser'
@@ -67,6 +68,11 @@ export default new Router({
           path:'/admin/configWrist',
           component: ConfigWrist,
           name:'ConfigWrist'
+        },
+        {
+          path:'/admin/configApp',
+          component: ConfigApp,
+          name:'ConfigApp'
         },
         {
           path:'/admin/configCard',

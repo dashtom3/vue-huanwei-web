@@ -217,6 +217,10 @@ export default {
             item.sn = item.sn_card
             temp = item.card[0]
             this.topData[5][1]++
+          }else if(item.app[0]){
+            item.sn = item.sn_app
+            temp = item.app[0]
+            this.topData[6][1]++
           }
           if(temp){
             var timeRes = parseFloat(this.getTimeData(temp.data_time))/3600>1?true:false
