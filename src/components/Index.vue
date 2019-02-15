@@ -32,7 +32,7 @@ export default {
       blocks:[[require('../assets/main/ab_01.png'),'作业地图','Work'],
               [require('../assets/main/ab_02.png'),'运营概况','Business'],
               [require('../assets/main/ab_03.png'),'监控预警','Alert'],
-              [require('../assets/main/ab_04.png'),'绩效考核',''],
+              [require('../assets/main/ab_04.png'),'绩效考核','ManageWork'],
               [require('../assets/main/ab_05.png'),'系统管理','ManageUser']]
     }
   },

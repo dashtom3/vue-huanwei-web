@@ -44,6 +44,9 @@
         <el-form-item label="车牌号">
           <el-input v-model="carEntity.name"></el-input>
         </el-form-item>
+        <el-form-item label="车牌编号">
+          <el-input v-model="carEntity.sn"></el-input>
+        </el-form-item>
         <el-form-item label="状态">
           <el-select v-model="carEntity.state" placeholder="">
             <el-option label="使用" :value=1 ></el-option>

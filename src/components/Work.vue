@@ -2,7 +2,7 @@
   <div class="main">
     <div class="left-content">
       <div class="block">
-        <div class="title"><h4>垃圾车</h4></div>
+        <div class="title"><h4>车辆</h4></div>
         <div class="tem-table">
           <el-table
             border
@@ -17,7 +17,7 @@
         </div>
       </div>
       <div class="block">
-        <div class="title"><h4>环卫工</h4></div>
+        <div class="title"><h4>人员</h4></div>
         <div class="tem-table">
           <el-table
             border
@@ -59,7 +59,7 @@
     </div>
     <div class="right-content">
       <div class="block2">
-      <div class="title"><h4>垃圾桶</h4></div>
+      <div class="title"><h4>深埋桶</h4></div>
       <div class="tem-table2">
         <el-table
           border
@@ -67,7 +67,7 @@
           :data="canData"
           @current-change="selectTableData"
           style="width: 100%">
-          <el-table-column label="地区"><template slot-scope="scope">{{scope.row.can[0]?scope.row.can[0].name:'未知'}}度</template></el-table-column>
+          <el-table-column label="地区"><template slot-scope="scope">{{scope.row.can[0]?scope.row.can[0].name:'未知'}}</template></el-table-column>
           <el-table-column label="状态"><template slot-scope="scope">{{scope.row.isFull?'满':'未满'}}</template></el-table-column>
           <el-table-column prop="temperature" label="温度"></el-table-column>
         </el-table>
@@ -105,7 +105,7 @@ export default {
     return {
       msg: 'Welcome to Your Vue.js App',
       mode:0,
-      checkBox:['全部','人员','车辆','垃圾桶'],
+      checkBox:['全部','车辆','人员','深埋桶'],
       checkSelect:'全部',
       isSelectOpen:false,
       loading:false,
@@ -226,7 +226,7 @@ export default {
     },
     nextStep(){
       this.markers.forEach(item=>{
-        if(item[0].data.kind == 1){
+        if(item[0].data.kind == 0){
           if(item[0].data.times < 10){
             var temp = [item[0].position[0]+(item[0].data.target[0]-item[0].position[0])/(10-item[0].data.times),item[0].position[1]+(item[0].data.target[1]-item[0].position[1])/(10-item[0].data.times)]
             item[0].position = temp
@@ -247,11 +247,31 @@ export default {
       // console.log(this.datePicker,this.$dtime(this.datePicker[0]).format('YYYY-MM-DD HH:mm:ss'),this.$dtime(this.datePicker[1]).format('YYYY-MM-DD HH:mm:ss'))
       this.isSelectOpen = !this.isSelectOpen
       this.loading = true
-      if(this.selectData.kind == 0){
+      var temp = {from_time:this.$dtime(this.datePicker[0]).format('YYYY-MM-DD HH:mm:ss'),to_time:this.$dtime(this.datePicker[1]).format('YYYY-MM-DD HH:mm:ss')}
+      temp.sn = this.selectData.sn
+      if(this.selectData.kind == 1){
+        this.$global.httpGetWithToken(this,'user/historyData',temp).then(res=>{
+          this.loading = false
+            var tempRes = []
+            var tempQ = []
+            res.data.forEach(item=>{
+              var tempCoord = this.$transform.wgs84togcj02(item.lng,item.lat)
+              item.lng = tempCoord[0]
+              item.lat = tempCoord[1]
+              if(tempQ.length == 0) {
+                tempQ = [item.lng,item.lat]
+              }else if(tempQ[0] != item.lng || tempQ[1] != item.lat){
+                tempRes.push([item.lng,item.lat])
+              }
+            })
+            this.polyline.path = tempRes
+            this.polyline.visible = true
+        }).catch(res=>{
+          this.loading = false
+        })
 
       }else {
-        var temp = {from_time:this.$dtime(this.datePicker[0]).format('YYYY-MM-DD HH:mm:ss'),to_time:this.$dtime(this.datePicker[1]).format('YYYY-MM-DD HH:mm:ss')}
-        temp.sn = this.selectData.sn
+
         this.$global.httpGetWithToken(this,'car/historyData',temp).then(res=>{
           this.loading = false
             var tempRes = []
@@ -299,7 +319,7 @@ export default {
           }
         })
         if(hasPeople == false){
-          var marker = this.setBasicMarker(data,0)
+          var marker = this.setBasicMarker(data,1)
           var tempImg = require('../assets/work/person.png')
           marker[0].content = '<div style="width:40px;text-align:center;"><img src="'+tempImg+'" style="width:25px"><div style="font-size:12px;background-color:white;margin-top:-10px;border-radius:4px;border:1px solid #999999">'+data.realName+'</div></div>'
           marker[1].content = '<div style="width:200px;height:180px;text-align:left;background-color:white;border-radius:4px;border:1px solid #666666;padding:4px">'
@@ -322,9 +342,9 @@ export default {
               this.map.position = [data.lng,data.lat]
             }
             var marker = this.setBasicMarker(data,2)
-            marker[0].content = '<div style="width:25px;text-align:center;"><img src="'+require('../assets/work/bin.png')+'" style="width:100%"></div>'
+            marker[0].content = '<div style="width:18px;text-align:center;"><img src="'+require('../assets/work/bin.png')+'" style="width:100%"></div>'
             marker[1].content = '<div style="width:200px;height:140px;text-align:left;background-color:white;border-radius:4px;border:1px solid #666666;padding:4px">'
-            +'<table style="width:100%"><tr><td>编号</td><td>'+data.sn+'</td></tr><tr><td>名称</td><td>'+(data.can[0]?data.can[0].name:'未知')+'</td></tr><tr><td>乡镇</td><td>'+(data.can[0]?data.can[0].place:'未知')+'</td></tr><tr><td>温度</td><td>'+data.temperature+'度</td></tr><tr><td>容量</td><td>'+(data.isFull?'满':'未满')+'</td></tr></table></div>'
+            +'<table style="width:100%"><tr><td>编号</td><td>'+data.sn+'</td></tr><tr><td>名称</td><td>'+(data.can[0]?data.can[0].name:'未知')+'</td></tr><tr><td>乡镇</td><td>'+(data.can[0]?data.can[0].place:'未知')+'</td></tr><tr><td>温度</td><td>'+data.temperature+'</td></tr><tr><td>容量</td><td>'+(data.isFull?'满':'未满')+'</td></tr></table></div>'
             this.markers.push(marker)
             // console.log(this.markers[data.sn])
           }
@@ -341,17 +361,20 @@ export default {
           item[0].data.times = 0
           var tempImg = data.lng > item[0].position[0] ? require('../assets/work/'+this.$global.ENUM.CAR_PIC[item[0].data.type][0]):require('../assets/work/'+this.$global.ENUM.CAR_PIC[item[0].data.type][1])
           item[0].content = '<div style="width:60px;text-align:center"><img src="'+tempImg+'" style="width:25px"><div style="font-size:12px;background-color:white;margin-top:-10px;border-radius:4px;border:1px solid #999999">'+item[0].data.name+'</div></div>'
-          if(this.$global.getFlatternDistance(item[0].position[0],item[0].position[1],data.lng,data.lat)>2000){
+          // console.log(item[0].position[1],item[0].position[0],data.lat,data.lng)
+          // var dis = this.$global.getFlatternDistance(item[0].position[0],item[0].position[1],data.lng,data.lat)
+          var dis = this.$global.getFlatternDistance(item[0].position[1],item[0].position[0],data.lat,data.lng)
+          // console.log(dis)
+          if(dis>2000){
             item[0].position = [data.lng,data.lat],
             item[1].position = [data.lng,data.lat]
           }
-
         }
       })
       if(temp == false){
         this.carData.forEach(item=>{
           if(item.sn == data.sn){
-            var marker = this.setBasicMarker(data,1)
+            var marker = this.setBasicMarker(data,0)
             // console.log(marker[0],this.$global.ENUM.CAR_PIC[item.type][0],item.type)
             marker[0].content = '<div style="width:60px;text-align:center"><img src="'+require('../assets/work/'+this.$global.ENUM.CAR_PIC[item.type][0])+'" style="width:25px"><div style="font-size:12px;background-color:white;margin-top:-10px;border-radius:4px;border:1px solid #999999">'+item.name+'</div></div>'
             marker[0].zIndex = 2

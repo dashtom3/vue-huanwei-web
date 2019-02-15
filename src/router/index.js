@@ -8,11 +8,12 @@ import ConfigCan from '@/components/admin/ConfigCan'
 import ConfigCard from '@/components/admin/ConfigCard'
 import ConfigWrist from '@/components/admin/ConfigWrist'
 import ConfigApp from '@/components/admin/ConfigApp'
+import ConfigWork from '@/components/admin/ConfigWork'
 import ManageCar from '@/components/admin/ManageCar'
 import ManageCan from '@/components/admin/ManageCan'
 import ManageUser from '@/components/admin/ManageUser'
 import ManageDepartment from '@/components/admin/ManageDepartment'
-
+import ManageWork from '@/components/admin/ManageWork'
 import Index from '@/components/Index'
 import Work from '@/components/Work'
 import Business from '@/components/Business'
@@ -80,6 +81,11 @@ export default new Router({
           name:'ConfigCard'
         },
         {
+          path:'/admin/configWork',
+          component: ConfigWork,
+          name:'ConfigWork'
+        },
+        {
           path:'/admin/manageCar',
           component: ManageCar,
           name:'ManageCar'
@@ -98,6 +104,11 @@ export default new Router({
           path:'/admin/manageDepartment',
           component: ManageDepartment,
           name:'ManageDepartment'
+        },
+        {
+          path:'/admin/manageWork',
+          component: ManageWork,
+          name:'ManageWork'
         },
         {
           path:'/admin/test',
