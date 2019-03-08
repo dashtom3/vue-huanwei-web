@@ -70,7 +70,7 @@ export default {
     getDistanceList(){
       var temp = { from_time:this.$dtime(this.month_select).format('YYYY-MM-DD HH:mm:ss'),to_time:this.$dtime(this.getNextMonth(this.month_select)).format('YYYY-MM-DD HH:mm:ss')}
       this.$global.httpGetWithToken(this,'work/distance',temp).then(res=>{
-
+        
         this.showDepartmentList(res.data)
       })
     },

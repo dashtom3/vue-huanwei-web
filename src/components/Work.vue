@@ -359,7 +359,7 @@ export default {
           temp = true
           item[0].data.target = [data.lng,data.lat],
           item[0].data.times = 0
-          var tempImg = data.lng > item[0].position[0] ? require('../assets/work/'+this.$global.ENUM.CAR_PIC[item[0].data.type][0]):require('../assets/work/'+this.$global.ENUM.CAR_PIC[item[0].data.type][1])
+          var tempImg = data.lng > item[0].position[0] ? require('../assets/work/'+this.$global.ENUM.CAR_PIC[item[0].data.type][1]):require('../assets/work/'+this.$global.ENUM.CAR_PIC[item[0].data.type][0])
           item[0].content = '<div style="width:60px;text-align:center"><img src="'+tempImg+'" style="width:25px"><div style="font-size:12px;background-color:white;margin-top:-10px;border-radius:4px;border:1px solid #999999">'+item[0].data.name+'</div></div>'
           // console.log(item[0].position[1],item[0].position[0],data.lat,data.lng)
           // var dis = this.$global.getFlatternDistance(item[0].position[0],item[0].position[1],data.lng,data.lat)
