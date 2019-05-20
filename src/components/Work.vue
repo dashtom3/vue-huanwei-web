@@ -2,12 +2,12 @@
   <div class="main">
     <div class="left-content">
       <div class="block">
-        <div class="title"><h4>车辆</h4></div>
+        <div class="title"><h4>车辆</h4><el-input class="search-input" v-model="Carsearch" placeholder="请输入关键字"></el-input></div>
         <div class="tem-table">
           <el-table
             border
             size="mini"
-            :data="carData"
+            :data="newCarData"
             @current-change="selectTableData"
             style="width: 100%">
             <el-table-column prop="carName" label="姓名"><template slot-scope="scope">{{scope.row.user?scope.row.user.realName:'未知'}}</template></el-table-column>
@@ -17,12 +17,12 @@
         </div>
       </div>
       <div class="block">
-        <div class="title"><h4>人员</h4></div>
+        <div class="title"><h4>人员</h4><el-input class="search-input" v-model="Usersearch" placeholder="请输入关键字"></el-input></div>
         <div class="tem-table">
           <el-table
             border
             size="mini"
-            :data="userData"
+            :data="newUserData"
             @current-change="selectTableData"
             style="width: 100%">
             <el-table-column
@@ -59,12 +59,12 @@
     </div>
     <div class="right-content">
       <div class="block2">
-      <div class="title"><h4>深埋桶</h4></div>
+      <div class="title"><h4>深埋桶</h4><el-input class="search-input" v-model="Cansearch" placeholder="请输入关键字"></el-input></div>
       <div class="tem-table2">
         <el-table
           border
           size="mini"
-          :data="canData"
+          :data="newCanData"
           @current-change="selectTableData"
           style="width: 100%">
           <el-table-column label="地区"><template slot-scope="scope">{{scope.row.can[0]?scope.row.can[0].name:'未知'}}</template></el-table-column>
@@ -103,6 +103,9 @@ export default {
   name: 'Main',
   data () {
     return {
+      Carsearch:'',
+      Usersearch:'',
+      Cansearch:'',
       msg: 'Welcome to Your Vue.js App',
       mode:0,
       checkBox:['全部','车辆','人员','深埋桶'],
@@ -133,6 +136,46 @@ export default {
 
     }
   },
+ computed: {
+      // 车辆搜索
+      newCarData () {
+        var search1 = this.Carsearch
+        if (search1) {
+          return this.carData.filter(data => {
+            return Object.keys(data.user).some(key => {
+              return String(data.user[key]).toLowerCase().indexOf(search1) > -1
+            })
+          })
+        }
+        return this.carData
+      },
+        // 人员搜索
+      newUserData () {
+        var search2 = this.Usersearch
+        if (search2) {
+          return this.userData.filter(data => {
+            return Object.keys(data).some(key => {
+              return String(data[key]).toLowerCase().indexOf(search2) > -1
+            })
+          })
+        }
+        return this.userData
+      },
+        // 深埋桶搜索
+      newCanData () {
+        var search3 = this.Cansearch
+        if (search3) {
+          return this.canData.filter(data => {
+            if(data.can[0]){
+              return Object.keys(data.can[0]).some(key => {
+              return String(data.can[0][key]).toLowerCase().indexOf(search3) > -1
+            })
+            }
+          })
+        }
+        return this.canData
+      }
+    },
   created(){
     this.init()
   },
@@ -194,7 +237,7 @@ export default {
       res.data.forEach(item=>{
         this.addUserMarker(item)
       })
-        console.log(this.markers)
+        // console.log(this.markers)
     },
     async getCarData(){
       this.$global.httpGetWithToken(this,'car/data').then(res=>{
@@ -438,6 +481,12 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
+<style>
+  .title .el-input__inner{
+    height: 30px;
+  }
+</style>
+
 <style scoped>
 /* table,table tr th, table tr td { border:1px solid #0094ff; } */
 .main{
@@ -496,10 +545,18 @@ export default {
 }
 .title {
   background-color: #eeeeee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 .title h4 {
   margin:0px;
   padding:10px;
 }
-
+.search-input {
+  width: 75%;
+  height: 30px;
+  margin-right: 15px;
+}
+ 
 </style>
