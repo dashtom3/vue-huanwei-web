@@ -218,7 +218,7 @@ export default {
       },25000)
       this.state.sInterval = setInterval(()=>{
         this.nextStep()
-      },500)
+      },1000)
     },
     async getCan(){
       const res = await this.$global.httpGetWithToken(this,'can/allOfConfig')
@@ -270,8 +270,8 @@ export default {
     nextStep(){
       this.markers.forEach(item=>{
         if(item[0].data.kind == 0){
-          if(item[0].data.times < 50){
-            var temp = [item[0].position[0]+(item[0].data.target[0]-item[0].position[0])/(50-item[0].data.times),item[0].position[1]+(item[0].data.target[1]-item[0].position[1])/(50-item[0].data.times)]
+          if(item[0].data.times < 25){
+            var temp = [item[0].position[0]+(item[0].data.target[0]-item[0].position[0])/(25-item[0].data.times),item[0].position[1]+(item[0].data.target[1]-item[0].position[1])/(25-item[0].data.times)]
             item[0].position = temp
             item[1].position = temp
           }else {
@@ -408,7 +408,7 @@ export default {
           // var dis = this.$global.getFlatternDistance(item[0].position[0],item[0].position[1],data.lng,data.lat)
           var dis = this.$global.getFlatternDistance(item[0].position[1],item[0].position[0],data.lat,data.lng)
           // console.log(dis)
-          if(dis>2000){
+          if(dis>5000){
             item[0].position = [data.lng,data.lat],
             item[1].position = [data.lng,data.lat]
           }
@@ -419,7 +419,7 @@ export default {
           if(item.sn == data.sn){
             var marker = this.setBasicMarker(data,0)
             // console.log(marker[0],this.$global.ENUM.CAR_PIC[item.type][0],item.type)
-            marker[0].content = '<div style="width:60px;text-align:center"><img src="'+require('../assets/work/'+this.$global.ENUM.CAR_PIC[item.type][0])+'" style="width:25px"><div style="font-size:12px;background-color:white;margin-top:-10px;border-radius:4px;border:1px solid #999999">'+item.name+'</div></div>'
+            marker[0].content = '<div style="width:65px;text-align:center"><img src="'+require('../assets/work/'+this.$global.ENUM.CAR_PIC[item.type][0])+'" style="width:25px"><div style="font-size:12px;background-color:white;margin-top:-10px;border-radius:4px;border:1px solid #999999">'+item.name+'</div></div>'
             marker[0].zIndex = 2
             marker[0].data.target = [data.lng,data.lat],
             marker[0].data.type = item.type
