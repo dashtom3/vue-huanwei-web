@@ -270,8 +270,8 @@ export default {
     nextStep(){
       this.markers.forEach(item=>{
         if(item[0].data.kind == 0){
-          if(item[0].data.times < 10){
-            var temp = [item[0].position[0]+(item[0].data.target[0]-item[0].position[0])/(10-item[0].data.times),item[0].position[1]+(item[0].data.target[1]-item[0].position[1])/(10-item[0].data.times)]
+          if(item[0].data.times < 25){
+            var temp = [item[0].position[0]+(item[0].data.target[0]-item[0].position[0])/(25-item[0].data.times),item[0].position[1]+(item[0].data.target[1]-item[0].position[1])/(25-item[0].data.times)]
             item[0].position = temp
             item[1].position = temp
           }else {
