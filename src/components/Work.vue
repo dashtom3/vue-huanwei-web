@@ -215,7 +215,7 @@ export default {
           this.state.num = 0
           this.getUser()
         }
-      },20000)
+      },25000)
       this.state.sInterval = setInterval(()=>{
         this.nextStep()
       },1000)
