@@ -218,7 +218,7 @@ export default {
       },25000)
       this.state.sInterval = setInterval(()=>{
         this.nextStep()
-      },1000)
+      },500)
     },
     async getCan(){
       const res = await this.$global.httpGetWithToken(this,'can/allOfConfig')
@@ -270,8 +270,8 @@ export default {
     nextStep(){
       this.markers.forEach(item=>{
         if(item[0].data.kind == 0){
-          if(item[0].data.times < 25){
-            var temp = [item[0].position[0]+(item[0].data.target[0]-item[0].position[0])/(25-item[0].data.times),item[0].position[1]+(item[0].data.target[1]-item[0].position[1])/(25-item[0].data.times)]
+          if(item[0].data.times < 50){
+            var temp = [item[0].position[0]+(item[0].data.target[0]-item[0].position[0])/(50-item[0].data.times),item[0].position[1]+(item[0].data.target[1]-item[0].position[1])/(50-item[0].data.times)]
             item[0].position = temp
             item[1].position = temp
           }else {
@@ -558,5 +558,5 @@ export default {
   height: 30px;
   margin-right: 15px;
 }
- 
+
 </style>

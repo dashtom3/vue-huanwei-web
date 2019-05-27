@@ -29,7 +29,9 @@ export default {
     return {
       msg: 'Welcome to Your Vue.js App',
       picture:[require('../assets/main/hb_01.jpg'),require('../assets/main/hb_02.jpg'),require('../assets/main/hb_03.jpg'),require('../assets/main/hb_04.jpg')],
-      blocks:[[require('../assets/main/ab_01.png'),'作业地图','Work'],
+      blocks:[
+              // [require('../assets/main/ab_02.png'),'数据面板','Business'],
+              [require('../assets/main/ab_01.png'),'作业地图','Work'],
               [require('../assets/main/ab_02.png'),'运营概况','Business'],
               [require('../assets/main/ab_03.png'),'监控预警','Alert'],
               [require('../assets/main/ab_04.png'),'绩效考核','ManageWork'],
